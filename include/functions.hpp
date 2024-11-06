@@ -1,0 +1,25 @@
+#include "main.h"
+#include <cmath>
+
+#ifndef FUNCTIONS_HPP
+#define FUNCTIONS_HPP
+
+extern bool isStaging;
+extern bool isReturning;
+extern bool isZeroing;
+extern bool isScoring;
+extern bool isIntaking;
+extern bool isReverseIntake;
+extern bool isRedAlliance;
+
+void STAGE_LADY_BROWN(void* param);
+void INTAKE(void* param);
+
+void activateIntake(int speed);
+void toggleMOGO();
+void toggleDoinker();
+void toggleIntakeCount();
+void activatelb(int speed);
+void movelb(double target, double power, double limit);
+
+#endif  // FUNCTIONS_HPP
