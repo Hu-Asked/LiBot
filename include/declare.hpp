@@ -44,3 +44,10 @@ extern PIDController pidlb;
 extern pros::Motor lb1;
 extern pros::Motor lb2;
 extern pros::Rotation lb_encoder;
+
+
+extern pros::ADIDigitalOut climbPTO; 
+extern pros::ADIDigitalOut climbPiston; 
+extern pros::ADIDigitalIn bumperSwitch;
+
+

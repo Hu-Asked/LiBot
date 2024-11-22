@@ -10,17 +10,22 @@ bool isScoring = false;
 bool isIntaking = false;
 bool isReverseIntake = false;
 
-bool isRedAlliance = true;
+bool isClimbingInitiated = false;
+bool isStagingClimb = false;
+bool isClimbing = false;
 
+bool isRedAlliance = true;
+bool isColorSort = true;
+double winchOutTime = 500;
 
 //          TASKS
 
 void STAGE_LADY_BROWN(void* param) {
     double target = 2850; //centidegrees
-    double limit = 16500; //prevent from going past;
+    double limit = 16000; //prevent from going past;
     while(true) {
         if(isStaging) {
-            limit = 16500;
+            limit = 16000;
             target = 2850;
             movelb(target, 100, limit);
             isStaging = false;
@@ -31,13 +36,13 @@ void STAGE_LADY_BROWN(void* param) {
             movelb(target, 100, limit);
             isReturning = false;
         } else if(isZeroing) {
-            limit = 16500;
+            limit = 16000;
             target = 0;
             movelb(target, 100, limit);
             isZeroing = false;
         } else if(isScoring) {
-            limit = 16500;
-            target = 15200;
+            limit = 16000;
+            target = 14000;
             movelb(target, 100, limit);
             isScoring = false;
         }
@@ -47,39 +52,97 @@ void STAGE_LADY_BROWN(void* param) {
 
 void INTAKE(void* param) {
     int val = 0;
-    int avg = 0;
+    bool isWrongColor = false;
     while(true) {
         val = colorSensor.get_hue();
         if(isIntaking) {  
             activateIntake(110);
             if(colorSensor.get_proximity() > 200) { 
-                if (isRedAlliance && (val > avg && val < 300)) {
-                    pros::delay(30);
-                    activateIntake(0);
-                    pros::delay(100);
-                } else if (!isRedAlliance && (val < avg || val > 300)) {
-                    pros::delay(30);
-                    activateIntake(0);
-                    pros::delay(100);
+                if ((isRedAlliance && (val > 100 && val < 300)) ||
+                    (!isRedAlliance && (val < 30 || val > 300))) {
+                    isWrongColor = true;
+                } else {
+                    isWrongColor = false;
                 }
             } else {
-                avg = colorSensor.get_hue();
+                isWrongColor = false;
             }
         } else if (isReverseIntake) {
             activateIntake(-110);
         } else if(!isScoring) {
             activateIntake(0);
+        }// when no longer ring detected and iswrong color stop intake
+        if(isColorSort && isWrongColor) {
+            pros::delay(30);
+            activateIntake(0);
+            pros::delay(100);
+            isWrongColor = false;
         }
-        
-        if(colorSensor.get_proximity() > 200) {    
-            pros::lcd::set_text(7, (val > avg && val < 300) ? "Blue" : "Red"); 
-        } else {
-            pros::lcd::set_text(7, "None");
-        }
-        pros::lcd::set_text(6, to_string(val) + " " + to_string(colorSensor.get_proximity()));
-
         
         pros::delay(20);
+    }
+}
+
+void CLIMB(void* param) {
+    climbPTO.set_value(true);
+    
+    //while loop
+    //  check if hang is at its max position
+    //  if arm is at max position stop
+    
+    while(true) {
+        if(isClimbing) {
+            break;
+        }
+        if(isStagingClimb) {
+            //activate PTO
+            //activateSideWing
+        } else {
+            //deactivate both
+        }
+        pros::delay(40);
+    }
+    int currentStage = 0;
+    while(true) {
+        if(isClimbing) {
+            while (currentStage < 3) {
+                int distance = 0;
+                switch (currentStage) { // set distance to level the robot should be off the ground for the respective hang
+                    case 0:
+                        distance = 0;
+                        break;
+                    case 1:
+                        distance = 1;
+                        break;
+                    case 2:
+                        distance = 2;
+                        break;
+                }
+                double startOfClimb = pros::millis();
+                while(pros::millis() - startOfClimb < winchOutTime) {
+                    // winch out
+                    pros::delay(30);
+                }
+        
+                startOfClimb = pros::millis();
+                while(true) {
+                    /* if distancesensor >= distance or pros::millis - startOfClimb >= maxTime:
+                        currentStage++;
+                        break;
+                    */
+                    if(!isClimbing) {
+                        break;
+                    }
+                    pros::delay(30);
+                }
+                if(!isClimbing) {
+                    break;
+                }
+
+                pros::delay(30);
+            }
+        }
+        pros::delay(40);
     }
 }
 

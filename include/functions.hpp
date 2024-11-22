@@ -10,10 +10,17 @@ extern bool isZeroing;
 extern bool isScoring;
 extern bool isIntaking;
 extern bool isReverseIntake;
+
+extern bool isClimbingInitiated;
+extern bool isStagingClimb;
+extern bool isClimbing;
+
 extern bool isRedAlliance;
+
 
 void STAGE_LADY_BROWN(void* param);
 void INTAKE(void* param);
+void CLIMB(void* param)
 
 void activateIntake(int speed);
 void toggleMOGO();

@@ -32,7 +32,7 @@ void initialize() {
             }
         });
     }
-    colorSensor.set_led_pwm(100);
+    colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
 
@@ -52,12 +52,17 @@ void autonomous() {
 void opcontrol() {
     double startTime = pros::millis();
     bool isNotified = false;
+
+    
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     isIntaking = false;
     isReverseIntake = false;
     isStaging = false;
     isScoring = false;
     isReturning = false;
+
+
+
     while (true) {
         if (!pros::competition::is_connected()) {
             if (master.get_digital_new_press(DIGITAL_RIGHT))
@@ -66,8 +71,13 @@ void opcontrol() {
 
         int Y = master.get_analog(ANALOG_LEFT_Y);
         int X = master.get_analog(ANALOG_RIGHT_X);
-
+        int LBMovement = master.get_analog(ANALOG_RIGHT_Y);
         chassis.arcade(Y, X);
+        
+        if(!isScoring && !isStaging && !isReturning && !isZeroing) {
+            activatelb(LBMovement);
+        }
+
         if(!isScoring) {
             if (master.get_digital(DIGITAL_R1)) {
                 isIntaking = true;
@@ -80,7 +90,7 @@ void opcontrol() {
                 isReverseIntake = false;
             }
         }
-        if(!isZeroing && !isStaging && !isReturning && lb_encoder.get_position() > 16500) {
+        if(!isZeroing && !isStaging && !isReturning && lb_encoder.get_position() > 16000) {
             isScoring = false;
             lb1.move(0);
             lb2.move(0);
@@ -99,8 +109,13 @@ void opcontrol() {
             }
         }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
-        if (master.get_digital_new_press(DIGITAL_X)) toggleIntakeCount();
+        if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
+        if (!isClimbingInitiated && master.get_digital_new_press(DIGITAL_X)) {
+            isClimbingInitiated = true;
+            pros::Task climb(CLIMB, nullptr);
+            isStagingClimb = true;
+        }
         pros::lcd::print(5, "Target: %ld", lb_encoder.get_position());
         pros::lcd::set_text(4, to_string(isStaging) + " " + to_string(isReturning) + " " + to_string(isScoring) + " " + to_string(isIntaking));
         if(!isNotified && pros::millis() - startTime >= 85000) {
