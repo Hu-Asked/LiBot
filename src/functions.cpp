@@ -17,6 +17,7 @@ bool isClimbing = false;
 bool isRedAlliance = true;
 bool isColorSort = true;
 double winchOutTime = 500;
+double maxClimbTime = 3500;
 
 //          TASKS
 
@@ -26,12 +27,12 @@ void STAGE_LADY_BROWN(void* param) {
     while(true) {
         if(isStaging) {
             limit = 16000;
-            target = 2850;
+            target = 3000;
             movelb(target, 100, limit);
             isStaging = false;
         } else if(isReturning) {
             limit = 50000;
-            target = 2850;
+            target = 3000;
             pros::delay(300);
             movelb(target, 100, limit);
             isReturning = false;
@@ -78,35 +79,31 @@ void INTAKE(void* param) {
             pros::delay(100);
             isWrongColor = false;
         }
-        
+        pros::lcd::set_text(7, to_string(colorSensor.get_proximity()));
         pros::delay(20);
     }
 }
 
 void CLIMB(void* param) {
+    bool PTOEnabled = true;
     climbPTO.set_value(true);
-    
-    //while loop
-    //  check if hang is at its max position
-    //  if arm is at max position stop
-    
+    climbPiston.set_value(true);
     while(true) {
-        if(isClimbing) {
-            break;
+        if(isStagingClimb && !PTOEnabled) {
+            climbPTO.set_value(true);
+            // wingPiston.set_value(true);
+        } else if(!isStagingClimb) {
+            climbPTO.set_value(false);
+            // windPiston.set_value(false);
         }
-        if(isStagingClimb) {
-            //activate PTO
-            //activateSideWing
-        } else {
-            //deactivate both
-        }
+        if(isClimbing) break;
         pros::delay(40);
     }
     int currentStage = 0;
+    int distance = 0;
     while(true) {
         if(isClimbing) {
             while (currentStage < 3) {
-                int distance = 0;
                 switch (currentStage) { // set distance to level the robot should be off the ground for the respective hang
                     case 0:
                         distance = 0;
@@ -119,14 +116,8 @@ void CLIMB(void* param) {
                         break;
                 }
                 double startOfClimb = pros::millis();
-                while(pros::millis() - startOfClimb < winchOutTime) {
-                    // winch out
-                    pros::delay(30);
-                }
-        
-                startOfClimb = pros::millis();
-                while(true) {
-                    /* if distancesensor >= distance or pros::millis - startOfClimb >= maxTime:
+                while(true) { //Winch in
+                    /* if distancesensor >= distance or pros::millis - startOfClimb >= maxClimbTime:
                         currentStage++;
                         break;
                     */
@@ -138,7 +129,16 @@ void CLIMB(void* param) {
                 if(!isClimbing) {
                     break;
                 }
-
+                while(pros::millis() - startOfClimb < winchOutTime) { //Winch out
+                    pros::delay(30);
+                }
+                climbPiston.set_value(false);
+                pros::delay(500);
+                
+                while(pros::millis() - startOfClimb < winchOutTime) { //Continue winch out
+                    pros::delay(30);
+                }
+                climbPiston.set_value(true);
                 pros::delay(30);
             }
         }

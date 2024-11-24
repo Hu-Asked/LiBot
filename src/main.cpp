@@ -71,13 +71,19 @@ void opcontrol() {
 
         int Y = master.get_analog(ANALOG_LEFT_Y);
         int X = master.get_analog(ANALOG_RIGHT_X);
-        int LBMovement = master.get_analog(ANALOG_RIGHT_Y);
+        // int LBMovement = master.get_analog(ANALOG_RIGHT_Y);
         chassis.arcade(Y, X);
         
-        if(!isScoring && !isStaging && !isReturning && !isZeroing) {
-            activatelb(LBMovement);
+        // if(!isScoring && !isStaging && !isReturning && !isZeroing) {
+        //     activatelb(LBMovement);
+        // }
+        if(!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_L2)) {    
+            activatelb(-110);
+        } else if (!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_R2)) {
+            activatelb(110);
+        } else if (!isZeroing && !isStaging && !isReturning && !isScoring) { 
+            activatelb(0);
         }
-
         if(!isScoring) {
             if (master.get_digital(DIGITAL_R1)) {
                 isIntaking = true;
@@ -111,11 +117,11 @@ void opcontrol() {
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        if (!isClimbingInitiated && master.get_digital_new_press(DIGITAL_X)) {
-            isClimbingInitiated = true;
-            pros::Task climb(CLIMB, nullptr);
-            isStagingClimb = true;
-        }
+        // if (!isClimbingInitiated && master.get_digital_new_press(DIGITAL_X)) {
+        //     isClimbingInitiated = true;
+        //     pros::Task climb(CLIMB, nullptr);
+        //     isStagingClimb = true;
+        // }
         pros::lcd::print(5, "Target: %ld", lb_encoder.get_position());
         pros::lcd::set_text(4, to_string(isStaging) + " " + to_string(isReturning) + " " + to_string(isScoring) + " " + to_string(isIntaking));
         if(!isNotified && pros::millis() - startTime >= 85000) {

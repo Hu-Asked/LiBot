@@ -87,9 +87,9 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::adi::Pneumatics clampPiston('A', false);
-pros::adi::Pneumatics doinkerPiston('B', false);
-pros::adi::Pneumatics intakeSizePiston('C', false);
+pros::ADIDigitalOut clampPiston('A');
+pros::ADIDigitalOut doinkerPiston('B');
+pros::ADIDigitalOut intakeSizePiston('C');
 
 pros::Motor intake1(-14, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
@@ -102,8 +102,8 @@ pros::Motor lb2(12, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Rotation lb_encoder(-17);
 
 //Climb
-pros::adi::Pneumatics climbPTO('D', false); 
-pros::adi::Pneumatics climbPiston('E'); 
+pros::ADIDigitalOut climbPTO('D'); 
+pros::ADIDigitalOut climbPiston('E'); 
 pros::ADIDigitalIn bumperSwitch('F');
 
 
