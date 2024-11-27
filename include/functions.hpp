@@ -16,6 +16,7 @@ extern bool isStagingClimb;
 extern bool isClimbing;
 
 extern bool isRedAlliance;
+extern bool isColorSort;
 
 
 void STAGE_LADY_BROWN(void* param);

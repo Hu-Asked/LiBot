@@ -79,7 +79,7 @@ void INTAKE(void* param) {
             pros::delay(100);
             isWrongColor = false;
         }
-        pros::lcd::set_text(7, to_string(colorSensor.get_proximity()));
+        pros::lcd::set_text(7, std::to_string(colorSensor.get_proximity()));
         pros::delay(20);
     }
 }

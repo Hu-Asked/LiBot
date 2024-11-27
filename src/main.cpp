@@ -29,6 +29,7 @@ void initialize() {
                 master.print(2, 0 , "Theta: %f", chassis.getPose().theta); // heading
                 // delay to save resources
                 pros::delay(20);
+
             }
         });
     }

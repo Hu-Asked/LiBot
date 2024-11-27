@@ -5,7 +5,7 @@
 #include "main.h"
 
 extern const double wheelDiameter;
-extern const double gearRatio ;
+extern const double gearRatio;
 extern const double trackWidth;
 extern const float DRIVESPEED;
 extern const int TURNSPEED;
