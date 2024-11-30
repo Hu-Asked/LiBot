@@ -1,42 +1,35 @@
 #include "main.h"
 
 void initialize() {
-    ez::as::auton_selector.autons_add({
-        Auton("Red Rings", RedRings),
-        Auton("Red MOGO \nMOGO rush", RedMOGO),
-        Auton("Red MOGO 2 \nTwo rings two stakes", RedMOGO2),
-        Auton("Blue Rings", BlueRings),
-        Auton("Blue MOGO \nMOGO rush", BlueMOGO),
-        Auton("Blue MOGO 2 \nTwo rings two stakes", BlueMOGO2),
-        Auton("Skills", AutonomousSkills),
-        Auton("Drive Example\n\nRobot drives forward", drive_example),
-        Auton("Turn Example\n\nRobot turns 90 degrees", turn_example),
-        Auton("Curve Example\n\nRobot curves", curve_example)
-    });
-    pros::lcd::initialize();
+    GHUI::initialize_auton_selector(
+        {
+            GHUI::Auton(RedRings, "Ringside", GHUI::RED),
+            GHUI::Auton(RedMOGO, "MOGO Rush", GHUI::RED),
+            GHUI::Auton(RedMOGO2, "Ringside Safe", GHUI::RED),
+            GHUI::Auton(BlueRings, "Ringside", GHUI::BLUE),
+            GHUI::Auton(BlueMOGO, "MOGO Rush", GHUI::BLUE),
+            GHUI::Auton(BlueMOGO2, "Ringside Safe", GHUI::BLUE),
+            GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
+            GHUI::Auton(drive_example, "Drive Test", GHUI::OTHER),
+            GHUI::Auton(turn_example, "Turn Test", GHUI::OTHER),
+        }
+    );
     chassis.calibrate();
-    ez::as::initialize();
     lb_encoder.reset_position();
     pidlb.setExitCondition(100, 100, 1400);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    if(!pros::competition::is_connected()) {    
-        pros::Task screen_task([&]() {
-            while (true) {
-                // print robot location to the brain screen
-                pros::lcd::print(2, "X: %f", chassis.getPose().x); // x
-                pros::lcd::print(3, "Y: %f", chassis.getPose().y); // y
-                master.print(2, 0 , "Theta: %f", chassis.getPose().theta); // heading
-                // delay to save resources
-                pros::delay(20);
+    lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
+    pros::Task screen_task([&]() {
+        while (true) {
+            GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+            lv_task_handler();
+            pros::delay(25);
 
-            }
-        });
-    }
+        }
+    });
     colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
-
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     master.rumble(".");
 }
@@ -48,12 +41,11 @@ void competition_initialize() {}
 void autonomous() {
     chassis.setPose(0, 0, 0);
     isRedAlliance = true;
-    ez::as::auton_selector.selected_auton_call();
+    GHUI::run_selected_auton();
 }
 void opcontrol() {
     double startTime = pros::millis();
     bool isNotified = false;
-
     
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     isIntaking = false;
@@ -61,8 +53,6 @@ void opcontrol() {
     isStaging = false;
     isScoring = false;
     isReturning = false;
-
-
 
     while (true) {
         if (!pros::competition::is_connected()) {

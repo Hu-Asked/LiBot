@@ -48,6 +48,7 @@
 #include "autons.hpp"
 #include "functions.hpp"
 #include "declare.hpp"
+#include "autonselector.hpp"
 
 //#include "okapi/api.hpp"
 

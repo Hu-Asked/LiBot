@@ -42,8 +42,8 @@ lemlib::ControllerSettings angularController( 3, // proportional gain (kP)
 // pros::Motor m5(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 // pros::Motor m6(6, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::MotorGroup LeftDrive({-1, -2, -8}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::MotorGroup RightDrive({4, 10, 6}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup LeftDrive({-1, -2, -3}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup RightDrive({4, 5, 6}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_325, 450, 8);
 
@@ -91,6 +91,7 @@ pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut doinkerPiston('B');
 pros::ADIDigitalOut intakeSizePiston('C');
 
+
 pros::Motor intake1(-14, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 pros::Optical colorSensor(13);
@@ -102,8 +103,8 @@ pros::Motor lb2(12, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Rotation lb_encoder(-17);
 
 //Climb
-pros::ADIDigitalOut climbPTO('D'); 
-pros::ADIDigitalOut climbPiston('E'); 
+pros::ADIDigitalOut climbPTO('H'); 
+pros::ADIDigitalOut climbPiston('G'); 
 pros::ADIDigitalIn bumperSwitch('F');
 
 
