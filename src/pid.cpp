@@ -9,6 +9,7 @@ double PIDController::calculateError(double curPosition, double goal, bool isRev
     double error = goal - curPosition;
     Proportional = error;
     Integral += error;
+    Integral *= 0.9;
     double maxIntegral = 1.0;
     Integral = std::clamp(Integral, -maxIntegral, maxIntegral);
     Derivative = error - prevError;

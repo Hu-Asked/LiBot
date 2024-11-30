@@ -38,13 +38,13 @@ void STAGE_LADY_BROWN(void* param) {
             isReturning = false;
         } else if(isZeroing) {
             limit = 16000;
-            target = 0;
+            target = 700;
             movelb(target, 100, limit);
             isZeroing = false;
         } else if(isScoring) {
             limit = 16000;
             target = 14000;
-            movelb(target, 100, limit);
+            movelb(target, 120, limit);
             isScoring = false;
         }
         pros::delay(30);
@@ -79,7 +79,7 @@ void INTAKE(void* param) {
             pros::delay(100);
             isWrongColor = false;
         }
-        pros::lcd::set_text(7, std::to_string(colorSensor.get_proximity()));
+        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + to_string(colorSensor.get_hue()), 0);
         pros::delay(20);
     }
 }

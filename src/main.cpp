@@ -24,7 +24,6 @@ void initialize() {
             GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
             lv_task_handler();
             pros::delay(25);
-
         }
     });
     colorSensor.set_led_pwm(80);
@@ -113,8 +112,6 @@ void opcontrol() {
         //     pros::Task climb(CLIMB, nullptr);
         //     isStagingClimb = true;
         // }
-        pros::lcd::print(5, "Target: %ld", lb_encoder.get_position());
-        pros::lcd::set_text(4, to_string(isStaging) + " " + to_string(isReturning) + " " + to_string(isScoring) + " " + to_string(isIntaking));
         if(!isNotified && pros::millis() - startTime >= 85000) {
             master.rumble("--------");
             isNotified = true;

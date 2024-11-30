@@ -97,7 +97,7 @@ pros::Motor intake1(-14, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Optical colorSensor(13);
 
 //LadyBrown
-PIDController pidlb(0.00036, 0.00001, 0.00017);
+PIDController pidlb(0.00023, 0.00045, 0.00016);
 pros::Motor lb1(-11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Motor lb2(12, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Rotation lb_encoder(-17);

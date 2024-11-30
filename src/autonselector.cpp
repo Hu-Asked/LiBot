@@ -20,6 +20,8 @@ namespace GHUI {
 
     lv_obj_t* bar;
 
+    std::vector<lv_obj_t*> consoleText(10);
+
     int selected_auton = 0;
     int numRed = 0;
     int numBlue = 0;
@@ -113,9 +115,12 @@ namespace GHUI {
     }
 
     void console_print(std::string text, int line) { //Enter a line from 0 - 9
-        lv_obj_t* label = lv_label_create(console);
-        lv_label_set_text(label, text.c_str());
-        lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 20 * line);
+        if (consoleText[line] != NULL) {
+            lv_obj_del(consoleText[line]);
+        }
+        consoleText[line] = lv_label_create(console);
+        lv_label_set_text(consoleText[line], text.c_str());
+        lv_obj_align(consoleText[line], LV_ALIGN_TOP_LEFT, 0, (20 * line) - 20);
     }
 
     void update_pos(double x, double y, double theta) {
