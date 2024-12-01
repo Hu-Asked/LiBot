@@ -81,6 +81,9 @@ void RedMOGO() {
     chassis.waitUntilDone();
     pros::delay(900);
     isIntaking = false;
+    // chassis.turnToPoint(-12, -17, 1000, {.maxSpeed = TURNSPEED});
+    // chassis.moveToPoint(-12, -17, 1000, {.maxSpeed = DRIVESPEED});
+    // isScoring = true;
 }
 
 void RedMOGO2() {
@@ -158,12 +161,11 @@ void BlueMOGO() {
     chassis.moveToPoint(13, -60, 1000, {.maxSpeed = 127});
     chassis.turnToHeading(280, 300, {.maxSpeed = 110});
     toggleDoinker();
-    chassis.moveToPoint(25, -60, 1000, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.turnToHeading(270, 500, {.maxSpeed = 80});
+    chassis.moveToPoint(30, -60, 1000, {.forwards = false, .maxSpeed = DRIVESPEED});
+    chassis.turnToHeading(240, 750, {.maxSpeed = 80});
+    chassis.turnToPoint(4, -58.7, 1200, {.forwards = false, .direction = AngularDirection::CW_CLOCKWISE, .maxSpeed = TURNSPEED});
     toggleDoinker();
-    pros::delay(150);
-    chassis.turnToPoint(2, -54.6, 1200, {.forwards = false, .maxSpeed = TURNSPEED});
-    chassis.moveToPoint(2, -54.6, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
+    chassis.moveToPoint(4, -58.7, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
     chassis.waitUntil(15);
     toggleMOGO();
     chassis.turnToPoint(15, -47.3, 1000, {.maxSpeed = TURNSPEED});
@@ -181,7 +183,10 @@ void BlueMOGO() {
     chassis.waitUntilDone();
     isIntaking = true;
     chassis.moveToPoint(45, -30, 1000, {.maxSpeed = DRIVESPEED});
-    
+    // pros::delay(200);
+    // chassis.turnToPoint(20, -12, 1000, {.maxSpeed = TURNSPEED});
+    // chassis.moveToPoint(20, -12, 1000, {.maxSpeed = DRIVESPEED});
+    // isScoring = true;
 }
 
 void BlueMOGO2() {

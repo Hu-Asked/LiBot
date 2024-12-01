@@ -9,6 +9,8 @@ const int TURNSPEED = 115.0f;
 // PIDController pidH(0.023, 0.011, 0.144);
 // PIDController pidD(0.21, 0, 0.03);
 
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+
 //          PID
 lemlib::ControllerSettings lateralController( 9.5, // proportional gain (kP)
                                               0, // integral gain (kI)

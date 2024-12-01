@@ -79,7 +79,7 @@ void INTAKE(void* param) {
             pros::delay(100);
             isWrongColor = false;
         }
-        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + to_string(colorSensor.get_hue()), 0);
+        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()), 0);
         pros::delay(20);
     }
 }

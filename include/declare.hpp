@@ -13,6 +13,8 @@ extern const int TURNSPEED;
 // extern PIDController pidH;
 // extern PIDController pidD;
 
+extern pros::Controller master;
+
 extern lemlib::ControllerSettings lateral_controller;
 extern lemlib::ControllerSettings angular_controller;
 

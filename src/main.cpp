@@ -3,12 +3,12 @@
 void initialize() {
     GHUI::initialize_auton_selector(
         {
-            GHUI::Auton(RedRings, "Ringside", GHUI::RED),
-            GHUI::Auton(RedMOGO, "MOGO Rush", GHUI::RED),
-            GHUI::Auton(RedMOGO2, "Ringside Safe", GHUI::RED),
-            GHUI::Auton(BlueRings, "Ringside", GHUI::BLUE),
-            GHUI::Auton(BlueMOGO, "MOGO Rush", GHUI::BLUE),
-            GHUI::Auton(BlueMOGO2, "Ringside Safe", GHUI::BLUE),
+            GHUI::Auton(RedRings, "Red Ringside", GHUI::RED),
+            GHUI::Auton(RedMOGO, "Red MOGO Rush", GHUI::RED),
+            GHUI::Auton(RedMOGO2, "Red Ringside Safe", GHUI::RED),
+            GHUI::Auton(BlueRings, "Blue Ringside", GHUI::BLUE),
+            GHUI::Auton(BlueMOGO, "Blue MOGO Rush", GHUI::BLUE),
+            GHUI::Auton(BlueMOGO2, "Blue Ringside Safe", GHUI::BLUE),
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
             GHUI::Auton(drive_example, "Drive Test", GHUI::OTHER),
             GHUI::Auton(turn_example, "Turn Test", GHUI::OTHER),
@@ -19,13 +19,14 @@ void initialize() {
     pidlb.setExitCondition(100, 100, 1400);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
-    pros::Task screen_task([&]() {
-        while (true) {
-            GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
-            lv_task_handler();
-            pros::delay(25);
-        }
-    });
+    if(!pros::competition::is_connected()) {
+        pros::Task screen_task([&]() {
+            while (true) {
+                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+                pros::delay(25);
+            }
+        });
+    }
     colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
@@ -63,7 +64,6 @@ void opcontrol() {
         int X = master.get_analog(ANALOG_RIGHT_X);
         // int LBMovement = master.get_analog(ANALOG_RIGHT_Y);
         chassis.arcade(Y, X);
-        
         // if(!isScoring && !isStaging && !isReturning && !isZeroing) {
         //     activatelb(LBMovement);
         // }
@@ -116,6 +116,7 @@ void opcontrol() {
             master.rumble("--------");
             isNotified = true;
         }
-        pros::delay(ez::util::DELAY_TIME);
+        lv_task_handler();
+        pros::delay(10);
     }
 }

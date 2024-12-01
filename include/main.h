@@ -36,7 +36,6 @@
 
 #include "api.h"
 #include "pros/apix.h"
-#include "EZ-Template/api.hpp"
 
 /**
  * You should add more #includes here
