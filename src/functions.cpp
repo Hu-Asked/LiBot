@@ -15,9 +15,19 @@ bool isStagingClimb = false;
 bool isClimbing = false;
 
 bool isRedAlliance = true;
-bool isColorSort = true;
 double winchOutTime = 500;
 double maxClimbTime = 3500;
+
+bool isColorSort = true;
+
+double BLUE_MIN = 200;
+double BLUE_MAX = 260;
+
+double RED_MIN = 0;
+double RED_MAX = 35;
+
+double RED_MIN_ALT = 330;
+double RED_MAX_ALT = 360;
 
 //          TASKS
 
@@ -47,40 +57,51 @@ void STAGE_LADY_BROWN(void* param) {
             movelb(target, 120, limit);
             isScoring = false;
         }
-        pros::delay(30);
+        pros::delay(20);
     }
 }
 
 void INTAKE(void* param) {
     int val = 0;
     bool isWrongColor = false;
+    double colorSortDistance = 300; //Degrees after detecting ring to eject
+    double distBetweenRings = 100;  //Distance to timeout color detection for
+    std::queue<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
         val = colorSensor.get_hue();
         if(isIntaking) {  
             activateIntake(110);
-            if(colorSensor.get_proximity() > 200) { 
-                if ((isRedAlliance && (val > 100 && val < 300)) ||
-                    (!isRedAlliance && (val < 30 || val > 300))) {
-                    isWrongColor = true;
-                } else {
-                    isWrongColor = false;
+            if(isColorSort && colorSensor.get_proximity() > 200) {
+                if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
+                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+                        ringsInIntake.push({true, intake1.get_position()});
+                    } else {
+                        ringsInIntake.push({false, intake1.get_position()});
+                    }
+                } else if (!ringsInIntake.empty()) {
+                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+                        ringsInIntake.back().first = true;
+                    }
                 }
-            } else {
-                isWrongColor = false;
             }
         } else if (isReverseIntake) {
             activateIntake(-110);
         } else if(!isScoring) {
             activateIntake(0);
-        }// when no longer ring detected and iswrong color stop intake
-        if(isColorSort && isWrongColor) {
-            pros::delay(30);
-            activateIntake(0);
-            pros::delay(100);
-            isWrongColor = false;
+        } // when no longer ring detected and is wrong color stop intake
+        if(isColorSort) {
+            if(fabs(intake1.get_position() - ringsInIntake.front().second) >= colorSortDistance) {
+                if(ringsInIntake.front().first) {
+                    activateIntake(0);
+                    pros::delay(50);
+                }
+                ringsInIntake.pop();
+            }
         }
         GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()), 0);
-        pros::delay(20);
+        pros::delay(15);
     }
 }
 

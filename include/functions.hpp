@@ -1,5 +1,6 @@
 #include "main.h"
 #include <cmath>
+#include <queue>
 
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP

@@ -19,15 +19,14 @@ void initialize() {
     pidlb.setExitCondition(100, 100, 1400);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
-    if(!pros::competition::is_connected()) {
         pros::Task screen_task([&]() {
             while (true) {
                 GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
                 pros::delay(25);
             }
         });
-    }
     colorSensor.set_led_pwm(80);
+    colorSensor.set_integration_time(20);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -39,7 +38,6 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    chassis.setPose(0, 0, 0);
     isRedAlliance = true;
     GHUI::run_selected_auton();
 }
