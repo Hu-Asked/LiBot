@@ -24,9 +24,9 @@ void initialize() {
                 GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
                 pros::delay(25);
             }
-        });
+        });  
+    colorSensor.set_integration_time(10);
     colorSensor.set_led_pwm(80);
-    colorSensor.set_integration_time(20);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -41,7 +41,7 @@ void autonomous() {
     isRedAlliance = true;
     GHUI::run_selected_auton();
 }
-void opcontrol() {
+void opcontrol() {  
     double startTime = pros::millis();
     bool isNotified = false;
     
@@ -105,11 +105,15 @@ void opcontrol() {
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        // if (!isClimbingInitiated && master.get_digital_new_press(DIGITAL_X)) {
-        //     isClimbingInitiated = true;
-        //     pros::Task climb(CLIMB, nullptr);
-        //     isStagingClimb = true;
-        // }
+        if (master.get_digital_new_press(DIGITAL_X)) {
+            if(!isClimbingInitiated) {
+                isClimbingInitiated = true;
+                pros::Task climb(CLIMB, nullptr);
+            } else {
+                isClimbing = !isClimbing;
+            }
+        }
+        
         if(!isNotified && pros::millis() - startTime >= 85000) {
             master.rumble("--------");
             isNotified = true;

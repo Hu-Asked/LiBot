@@ -36,6 +36,8 @@
 
 #include "api.h"
 #include "pros/apix.h"
+#include "gif-pros/gifclass.hpp"
+
 
 /**
  * You should add more #includes here

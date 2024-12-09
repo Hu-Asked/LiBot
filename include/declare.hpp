@@ -50,6 +50,7 @@ extern pros::Rotation lb_encoder;
 
 extern pros::ADIDigitalOut climbPTO; 
 extern pros::ADIDigitalOut climbPiston; 
-extern pros::ADIDigitalIn bumperSwitch;
+extern pros::ADIDigitalOut wingPiston;
+extern pros::Distance distanceSensor;
 
 

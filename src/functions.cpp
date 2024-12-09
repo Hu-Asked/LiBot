@@ -11,12 +11,9 @@ bool isIntaking = false;
 bool isReverseIntake = false;
 
 bool isClimbingInitiated = false;
-bool isStagingClimb = false;
 bool isClimbing = false;
 
 bool isRedAlliance = true;
-double winchOutTime = 500;
-double maxClimbTime = 3500;
 
 bool isColorSort = true;
 
@@ -64,9 +61,9 @@ void STAGE_LADY_BROWN(void* param) {
 void INTAKE(void* param) {
     int val = 0;
     bool isWrongColor = false;
-    double colorSortDistance = 300; //Degrees after detecting ring to eject
-    double distBetweenRings = 100;  //Distance to timeout color detection for
-    std::queue<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
+    double colorSortDistance = 230; //Degrees after detecting ring to eject
+    double distBetweenRings = 400;  //Distance to timeout color detection for
+    std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
         val = colorSensor.get_hue();
         if(isIntaking) {  
@@ -75,9 +72,9 @@ void INTAKE(void* param) {
                 if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
                         (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-                        ringsInIntake.push({true, intake1.get_position()});
+                        ringsInIntake.push_back({true, intake1.get_position()});
                     } else {
-                        ringsInIntake.push({false, intake1.get_position()});
+                        ringsInIntake.push_back({false, intake1.get_position()});
                     }
                 } else if (!ringsInIntake.empty()) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
@@ -91,39 +88,37 @@ void INTAKE(void* param) {
         } else if(!isScoring) {
             activateIntake(0);
         } // when no longer ring detected and is wrong color stop intake
-        if(isColorSort) {
+        if(isColorSort && !ringsInIntake.empty()) {
             if(fabs(intake1.get_position() - ringsInIntake.front().second) >= colorSortDistance) {
                 if(ringsInIntake.front().first) {
+                    std::cout << ringsInIntake.front().second << " " << intake1.get_position() << " " << ringsInIntake.size() << "\n";
+                    activateIntake(-127);
+                    pros::delay(25);
                     activateIntake(0);
-                    pros::delay(50);
                 }
-                ringsInIntake.pop();
+                ringsInIntake.pop_front();
+            }
+            if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
+                ringsInIntake.pop_back();
             }
         }
-        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()), 0);
-        pros::delay(15);
+        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()) + " " + std::to_string(intake1.get_position()), 0);
+        pros::delay(5);
     }
 }
 
 void CLIMB(void* param) {
-    bool PTOEnabled = true;
-    climbPTO.set_value(true);
-    climbPiston.set_value(true);
-    while(true) {
-        if(isStagingClimb && !PTOEnabled) {
-            climbPTO.set_value(true);
-            // wingPiston.set_value(true);
-        } else if(!isStagingClimb) {
-            climbPTO.set_value(false);
-            // windPiston.set_value(false);
-        }
-        if(isClimbing) break;
-        pros::delay(40);
-    }
+    climbPiston.set_value(true); //release hang
     int currentStage = 0;
     int distance = 0;
+    double FirstWinchOutTime = 2000;
+    double SecondWinchOutTime = 2300;
+    double maxClimbTime = 5000;
     while(true) {
+        GHUI::console_print(std::to_string(distanceSensor.get_distance()), 3);
         if(isClimbing) {
+            climbPTO.set_value(true);
+            wingPiston.set_value(true);
             while (currentStage < 3) {
                 switch (currentStage) { // set distance to level the robot should be off the ground for the respective hang
                     case 0:
@@ -138,32 +133,43 @@ void CLIMB(void* param) {
                 }
                 double startOfClimb = pros::millis();
                 while(true) { //Winch in
-                    /* if distancesensor >= distance or pros::millis - startOfClimb >= maxClimbTime:
-                        currentStage++;
-                        break;
-                    */
-                    if(!isClimbing) {
+                    LeftDrive.move(127);
+                    RightDrive.move(127);
+                    if (distanceSensor.get_distance() >= distance || pros::millis() - startOfClimb >= maxClimbTime){                       currentStage++;
                         break;
                     }
+                    if(!isClimbing) break;
                     pros::delay(30);
                 }
-                if(!isClimbing) {
+                if (currentStage == 3) {
+                    isClimbing = false;
                     break;
                 }
-                while(pros::millis() - startOfClimb < winchOutTime) { //Winch out
+                double startOfWinchOut = pros::millis();
+                while(pros::millis() - startOfWinchOut < FirstWinchOutTime) { //Winch out
+                    LeftDrive.move(-127);
+                    RightDrive.move(-127);
+                    if(!isClimbing) break;
                     pros::delay(30);
                 }
+                LeftDrive.move(0);
+                RightDrive.move(0);
                 climbPiston.set_value(false);
-                pros::delay(500);
-                
-                while(pros::millis() - startOfClimb < winchOutTime) { //Continue winch out
+                pros::delay(100);
+                startOfWinchOut = pros::millis();
+                while(pros::millis() - startOfWinchOut < SecondWinchOutTime) {
+                    LeftDrive.move(-127);
+                    RightDrive.move(-127);
+                    if(!isClimbing) break;
                     pros::delay(30);
                 }
+                LeftDrive.move(0);
+                RightDrive.move(0);
                 climbPiston.set_value(true);
                 pros::delay(30);
             }
         }
-        pros::delay(40);
+        pros::delay(50);
     }
 }
 

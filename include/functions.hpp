@@ -13,7 +13,6 @@ extern bool isIntaking;
 extern bool isReverseIntake;
 
 extern bool isClimbingInitiated;
-extern bool isStagingClimb;
 extern bool isClimbing;
 
 extern bool isRedAlliance;

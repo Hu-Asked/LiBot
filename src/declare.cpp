@@ -106,7 +106,8 @@ pros::Rotation lb_encoder(-17);
 
 //Climb
 pros::ADIDigitalOut climbPTO('H'); 
-pros::ADIDigitalOut climbPiston('G'); 
-pros::ADIDigitalIn bumperSwitch('F');
+pros::ADIDigitalOut climbPiston('G');
+pros::ADIDigitalOut wingPiston('D'); 
+pros::Distance distanceSensor('F');
 
 

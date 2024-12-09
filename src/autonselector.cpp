@@ -1,7 +1,5 @@
 #include "autonselector.hpp"
 
-// LV_IMG_DECLARE(jerry);
-
 namespace GHUI {
     lv_obj_t* posLabel;
     lv_obj_t* selectedAutonLabel;
@@ -172,9 +170,11 @@ namespace GHUI {
     void create_home_screen() {
         homeScreen = lv_obj_create(NULL);
         
-        // lv_obj_t* logo = lv_img_create(homeScreen);
-        // lv_img_set_src(logo, &jerry);
-        // lv_obj_align(logo, LV_ALIGN_CENTER, 0, -20);
+        lv_obj_t* logo = lv_obj_create(homeScreen);
+        lv_obj_align(logo, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_style_bg_opa(logo, LV_OPA_TRANSP, 0);
+
+        Gif gif("/usd/logo.gif", logo);
 
         bar = lv_obj_create(homeScreen);
         
