@@ -10,6 +10,9 @@ bool isScoring = false;
 bool isIntaking = false;
 bool isReverseIntake = false;
 
+bool isWingOut = false;
+bool isClimbOut = false;
+
 bool isClimbingInitiated = false;
 bool isClimbing = false;
 
@@ -110,66 +113,90 @@ void INTAKE(void* param) {
 void CLIMB(void* param) {
     climbPiston.set_value(true); //release hang
     int currentStage = 0;
-    int distance = 0;
-    double FirstWinchOutTime = 2000;
-    double SecondWinchOutTime = 2300;
-    double maxClimbTime = 5000;
+    double pistonExtendTime = 900;
+    double winchOutTime = 1800;
+    double maxClimbTime = 3700;
+    bool endClimb = false;
+    pros::delay(500);
+    climbPiston.set_value(false);
     while(true) {
-        GHUI::console_print(std::to_string(distanceSensor.get_distance()), 3);
+        if(endClimb) {
+            break;
+        }
+
         if(isClimbing) {
             climbPTO.set_value(true);
-            wingPiston.set_value(true);
+            wingPiston.set_value(false);
             while (currentStage < 3) {
-                switch (currentStage) { // set distance to level the robot should be off the ground for the respective hang
+                switch (currentStage) {//set distance to level the robot should be off the ground for the respective hang
                     case 0:
-                        distance = 0;
+                        maxClimbTime = 3100;
                         break;
                     case 1:
-                        distance = 1;
+                        maxClimbTime = 3850;
                         break;
                     case 2:
-                        distance = 2;
+                        maxClimbTime = 3850;
                         break;
                 }
                 double startOfClimb = pros::millis();
+
                 while(true) { //Winch in
-                    LeftDrive.move(127);
-                    RightDrive.move(127);
-                    if (distanceSensor.get_distance() >= distance || pros::millis() - startOfClimb >= maxClimbTime){                       currentStage++;
+                    if(!isClimbing) {
+                        endClimb = true;
                         break;
                     }
-                    if(!isClimbing) break;
-                    pros::delay(30);
+                    LeftDrive.move(-127);
+                    RightDrive.move(-127);
+                    if (pros::millis() - startOfClimb >= maxClimbTime){                       
+                        currentStage++;
+                        break;
+                    }
+                    pros::delay(20);
                 }
                 if (currentStage == 3) {
                     isClimbing = false;
+                    endClimb = true;
                     break;
                 }
-                double startOfWinchOut = pros::millis();
-                while(pros::millis() - startOfWinchOut < FirstWinchOutTime) { //Winch out
-                    LeftDrive.move(-127);
-                    RightDrive.move(-127);
-                    if(!isClimbing) break;
-                    pros::delay(30);
+                if(!isClimbing) {
+                    endClimb = true;
+                    break;
                 }
-                LeftDrive.move(0);
-                RightDrive.move(0);
                 climbPiston.set_value(false);
-                pros::delay(100);
-                startOfWinchOut = pros::millis();
-                while(pros::millis() - startOfWinchOut < SecondWinchOutTime) {
-                    LeftDrive.move(-127);
-                    RightDrive.move(-127);
-                    if(!isClimbing) break;
-                    pros::delay(30);
+                double startOfWinchOut = pros::millis();
+                bool isEvaded = false;
+                bool isPassived = false;
+                pros::delay(150);
+                double speed = 60;
+                while(pros::millis() - startOfWinchOut < winchOutTime) { //Winch out
+                    if(!isClimbing) {
+                        endClimb = true;
+                        break;
+                    }
+                    LeftDrive.move(speed);
+                    RightDrive.move(speed);
+                    if(!isPassived && pros::millis() - startOfWinchOut >= 600) {
+                        climbPiston.set_value(true);
+                        isPassived = true;
+                        speed = 127;
+                    }
+                    if(!isEvaded && pros::millis() - startOfWinchOut >= pistonExtendTime) {
+                        climbPiston.set_value(false);
+                        isEvaded = true;
+                    }
+                    pros::delay(20);
+                }
+                if(!isClimbing) {
+                    endClimb = true;
+                    break;
                 }
                 LeftDrive.move(0);
                 RightDrive.move(0);
                 climbPiston.set_value(true);
-                pros::delay(30);
             }
         }
-        pros::delay(50);
+        pros::delay(30);
     }
 }
 
@@ -192,6 +219,12 @@ void toggleDoinker() {
 void toggleIntakeCount() {
     intakeSizePiston.set_value(!isIntakeIncreased);
     isIntakeIncreased = !isIntakeIncreased;
+}
+
+
+void toggleClimb() {
+    climbPiston.set_value(!isClimbOut);
+    isClimbOut = !isClimbOut;
 }
 
 void activatelb(int speed) {

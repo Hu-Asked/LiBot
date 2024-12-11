@@ -19,12 +19,24 @@ void initialize() {
     pidlb.setExitCondition(100, 100, 1400);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
+    if (!pros::competition::is_connected()) {
         pros::Task screen_task([&]() {
             while (true) {
                 GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+                std::string temperature = "Left";
+                for(auto a : LeftDrive.get_temperature_all()) {
+                    temperature += " " + std::to_string(a);
+                }
+                temperature += " Right";
+                for(auto a : RightDrive.get_temperature_all()) {
+                    temperature + " " + std::to_string(a);
+                }
+                temperature += " Intake " + std::to_string(intake1.get_temperature());
+                GHUI::console_print(temperature, 1);
                 pros::delay(25);
             }
         });  
+    }
     colorSensor.set_integration_time(10);
     colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
@@ -60,12 +72,10 @@ void opcontrol() {
 
         int Y = master.get_analog(ANALOG_LEFT_Y);
         int X = master.get_analog(ANALOG_RIGHT_X);
-        // int LBMovement = master.get_analog(ANALOG_RIGHT_Y);
-        chassis.arcade(Y, X);
-        // if(!isScoring && !isStaging && !isReturning && !isZeroing) {
-        //     activatelb(LBMovement);
-        // }
-        if(!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_L2)) {    
+        if(!isClimbing) {
+            chassis.arcade(Y, X);
+        }
+        if(!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_L2)) {
             activatelb(-110);
         } else if (!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_R2)) {
             activatelb(110);
@@ -84,32 +94,40 @@ void opcontrol() {
                 isReverseIntake = false;
             }
         }
-        if(!isZeroing && !isStaging && !isReturning && lb_encoder.get_position() > 16000) {
-            isScoring = false;
-            lb1.move(0);
-            lb2.move(0);
-            isReturning = true;
-        }
-        if(!isStaging && !isReturning && !isScoring && !isZeroing) {
-            if (master.get_digital(DIGITAL_UP)) {
-                intake1.move(0);
-                intake1.move_relative(-60, 127);
-                isIntaking = false;
-                isScoring = true;
-            } else if (master.get_digital(DIGITAL_DOWN)) {
-                isZeroing = true;
-            } else if (master.get_digital(DIGITAL_LEFT)) {
-                isStaging = true;
+        if(!isClimbingInitiated) {
+            if(!isZeroing && !isStaging && !isReturning && lb_encoder.get_position() > 16000) {
+                isScoring = false;
+                lb1.move(0);
+                lb2.move(0);
+                isReturning = true;
+            }
+            if(!isStaging && !isReturning && !isScoring && !isZeroing) {
+                if (master.get_digital(DIGITAL_UP)) {
+                    intake1.move(0);
+                    intake1.move_relative(-60, 127);
+                    isIntaking = false;
+                    isScoring = true;
+                } else if (master.get_digital(DIGITAL_DOWN)) {
+                    isZeroing = true;
+                } else if (master.get_digital(DIGITAL_LEFT)) {
+                    isStaging = true;
+                }
+            }
+        } else {
+            if(master.get_digital_new_press(DIGITAL_UP)) {
+                toggleClimb();
             }
         }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        if (master.get_digital_new_press(DIGITAL_X)) {
+        if (master.get_digital(DIGITAL_L1) && master.get_digital(DIGITAL_R1) && master.get_digital_new_press(DIGITAL_X)) {
             if(!isClimbingInitiated) {
+                master.rumble("--");
                 isClimbingInitiated = true;
                 pros::Task climb(CLIMB, nullptr);
             } else {
+                master.rumble(".");
                 isClimbing = !isClimbing;
             }
         }

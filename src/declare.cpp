@@ -3,8 +3,8 @@
 const double gearRatio = 36.0/48.0;
 const double trackWidth = 11.942;
 
-const float DRIVESPEED = 115.0f;
-const int TURNSPEED = 115.0f;
+const float DRIVESPEED = 120.0f;
+const int TURNSPEED = 120.0f;
 
 // PIDController pidH(0.023, 0.011, 0.144);
 // PIDController pidD(0.21, 0, 0.03);
@@ -44,16 +44,16 @@ lemlib::ControllerSettings angularController( 3, // proportional gain (kP)
 // pros::Motor m5(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 // pros::Motor m6(6, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::MotorGroup LeftDrive({-1, -2, -3}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::MotorGroup RightDrive({4, 5, 6}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup LeftDrive({-18, -19, 20}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup RightDrive({15, 16, -17}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_325, 450, 8);
+lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_275, 450, 2);
 
-pros::IMU imu(7);
+pros::IMU imu(14);
 
 //          ODOMETRY
-pros::Rotation horizontal_encoder(-16);
-pros::Rotation vertical_encoder(-15);
+pros::Rotation horizontal_encoder(-10);
+pros::Rotation vertical_encoder(9);
 
 lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -1.64);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -0.769);
@@ -89,9 +89,9 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::ADIDigitalOut clampPiston('A');
-pros::ADIDigitalOut doinkerPiston('B');
-pros::ADIDigitalOut intakeSizePiston('C');
+pros::ADIDigitalOut clampPiston('D');
+pros::ADIDigitalOut doinkerPiston('E');
+pros::ADIDigitalOut intakeSizePiston('F');
 
 
 pros::Motor intake1(-14, pros::MotorGearset::blue, pros::MotorUnits::degrees);
@@ -106,8 +106,7 @@ pros::Rotation lb_encoder(-17);
 
 //Climb
 pros::ADIDigitalOut climbPTO('H'); 
-pros::ADIDigitalOut climbPiston('G');
-pros::ADIDigitalOut wingPiston('D'); 
-pros::Distance distanceSensor('F');
+pros::ADIDigitalOut climbPiston('A');
+pros::ADIDigitalOut wingPiston('B');
 
 

@@ -27,6 +27,7 @@ void activateIntake(int speed);
 void toggleMOGO();
 void toggleDoinker();
 void toggleIntakeCount();
+void toggleClimb();
 void activatelb(int speed);
 void movelb(double target, double power, double limit);
 

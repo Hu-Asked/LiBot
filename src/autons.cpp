@@ -219,9 +219,6 @@ void BlueMOGO2() {
     isScoring = true;
 }
 
-ASSET(skillsfirstpath_txt);
-ASSET(skillssecondpath_txt);
-ASSET(skillsthirdpath_txt);
 void AutonomousSkills() {
     isRedAlliance = true;
     isColorSort = false;
@@ -308,13 +305,67 @@ void AutonomousSkills() {
     // chassis.turnToPoint(60, -55, 1000, {.maxSpeed = TURNSPEED});
     // chassis.moveToPoint(60, -55, 1500, {.maxSpeed = DRIVESPEED});
 }
-
+double target = 0;
 void drive_example() {
-    chassis.moveToPoint(0, 48, 10000, {.maxSpeed = DRIVESPEED});
+    pros::Task print_task([]() {
+        double start = pros::millis();
+        while(true) {
+            std::cout << std::to_string(chassis.getPose().x) << std::to_string(target) << std::to_string(pros::millis() - start) << "\n";
+            pros::delay(10);
+        }
+    });
+    target = 48;
+    chassis.moveToPoint(0, 48, 5000, {.maxSpeed = DRIVESPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 0;
+    chassis.moveToPoint(0, 0, 5000, {.forwards = false, .maxSpeed = DRIVESPEED});
+    pros::delay(500);
+    target = 24;
+    chassis.setPose({0, 0, 0});
+    chassis.moveToPoint(0, 24, 5000, {.maxSpeed = DRIVESPEED});
+    pros::delay(500);
+    target = 0;
+    chassis.moveToPoint(0, 0, 5000, {.forwards = false, .maxSpeed = DRIVESPEED});
+    chassis.waitUntilDone();
 }
-
 void turn_example() {
-    chassis.turnToHeading(90, 1000, {.maxSpeed = TURNSPEED});
+    pros::Task print_task([]() {
+        double start = pros::millis();
+        while(true) {
+            std::cout << std::to_string(chassis.getPose().theta) << std::to_string(target) << std::to_string(pros::millis() - start) << "\n";
+            pros::delay(10);
+        }
+    });
+    target = 45;
+    chassis.turnToHeading(45, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 90;
+    chassis.turnToHeading(90, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 90;
+    chassis.turnToHeading(135, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 180;
+    chassis.turnToHeading(180, 4000, {.maxSpeed = TURNSPEED});
+    pros::delay(500);
+    target = 45;
+    chassis.turnToHeading(45, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 90;
+    chassis.turnToHeading(90, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 90;
+    chassis.turnToHeading(135, 4000, {.maxSpeed = TURNSPEED});
+    chassis.waitUntilDone();
+    pros::delay(500);
+    target = 180;
+    chassis.turnToHeading(180, 4000, {.maxSpeed = TURNSPEED});
 }
 
 void curve_example() {
