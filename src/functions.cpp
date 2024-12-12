@@ -3,10 +3,11 @@
 bool isClamped = false;
 bool isLifted = false;
 bool isIntakeIncreased = false;
-bool isStaging = false;
-bool isReturning = false;
-bool isZeroing = false;
+// bool isStaging = false;
+// bool isReturning = false;
+// bool isZeroing = false;
 bool isScoring = false;
+bool isMovingLB = false;
 bool isIntaking = false;
 bool isReverseIntake = false;
 
@@ -30,33 +31,42 @@ double RED_MIN_ALT = 330;
 double RED_MAX_ALT = 360;
 
 //          TASKS
+double lbTarget = 0;
+double lbLimit = 0;
 
+void set_lb_pos(double target, double limit) {
+    lbTarget = target;
+    lbLimit = limit;
+    isMovingLB = true;
+}
 void STAGE_LADY_BROWN(void* param) {
-    double target = 2850; //centidegrees
-    double limit = 16000; //prevent from going past;
     while(true) {
-        if(isStaging) {
-            limit = 16000;
-            target = 3000;
-            movelb(target, 100, limit);
-            isStaging = false;
-        } else if(isReturning) {
-            limit = 50000;
-            target = 3000;
-            pros::delay(300);
-            movelb(target, 100, limit);
-            isReturning = false;
-        } else if(isZeroing) {
-            limit = 16000;
-            target = 700;
-            movelb(target, 100, limit);
-            isZeroing = false;
-        } else if(isScoring) {
-            limit = 16000;
-            target = 14000;
-            movelb(target, 120, limit);
-            isScoring = false;
+        if (isMovingLB) {
+            movelb(lbTarget, 100, lbLimit);
+            isMovingLB = false;
         }
+        // if(isStaging) {
+        //     limit = 16000;
+        //     target = 3000;
+        //     movelb(target, 100, limit);
+        //     isStaging = false;
+        // } else if(isReturning) {
+        //     limit = 50000;
+        //     target = 3000;
+        //     pros::delay(300);
+        //     movelb(target, 100, limit);
+        //     isReturning = false;
+        // } else if(isZeroing) {
+        //     limit = 16000;
+        //     target = 700;
+        //     movelb(target, 100, limit);
+        //     isZeroing = false;
+        // } else if(isScoring) {
+        //     limit = 16000;
+        //     target = 14000;
+        //     movelb(target, 120, limit);
+        //     isScoring = false;
+        // }
         pros::delay(20);
     }
 }
@@ -88,7 +98,7 @@ void INTAKE(void* param) {
             }
         } else if (isReverseIntake) {
             activateIntake(-110);
-        } else if(!isScoring) {
+        } else if (!isScoring) {
             activateIntake(0);
         } // when no longer ring detected and is wrong color stop intake
         if(isColorSort && !ringsInIntake.empty()) {

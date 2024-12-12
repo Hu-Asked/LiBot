@@ -1,7 +1,7 @@
 #include "declare.hpp"
 
 const double gearRatio = 36.0/48.0;
-const double trackWidth = 11.942;
+const double trackWidth = 11.4;
 
 const float DRIVESPEED = 120.0f;
 const int TURNSPEED = 120.0f;
@@ -12,9 +12,9 @@ const int TURNSPEED = 120.0f;
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //          PID
-lemlib::ControllerSettings lateralController( 9.5, // proportional gain (kP)
+lemlib::ControllerSettings lateralController( 7, // proportional gain (kP) 7 not bad
                                               0, // integral gain (kI)
-                                              7, // derivative gain (kD) 
+                                              2.5, // derivative gain (kD) 
                                               0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -23,10 +23,10 @@ lemlib::ControllerSettings lateralController( 9.5, // proportional gain (kP)
                                               127 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angularController( 3, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              16, // derivative gain (kD)
-                                              0, // anti windup
+lemlib::ControllerSettings angularController( 2.2, // proportional gain (kP) //2.2, 0.2, 7 not bad
+                                              0.2, // integral gain (kI)
+                                              7, // derivative gain (kD)
+                                              4, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
                                               3, // large error range, in degrees
@@ -52,11 +52,11 @@ lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniw
 pros::IMU imu(14);
 
 //          ODOMETRY
-pros::Rotation horizontal_encoder(-10);
+pros::Rotation horizontal_encoder(-8);
 pros::Rotation vertical_encoder(9);
 
-lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -1.64);
-lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -0.769);
+lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -3.4);
+lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.307);
 
 lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             nullptr,
@@ -89,24 +89,24 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::ADIDigitalOut clampPiston('D');
+pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut doinkerPiston('E');
 pros::ADIDigitalOut intakeSizePiston('F');
 
 
-pros::Motor intake1(-14, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 pros::Optical colorSensor(13);
 
 //LadyBrown
 PIDController pidlb(0.00023, 0.00045, 0.00016);
-pros::Motor lb1(-11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::Motor lb2(12, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor lb1(-4, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor lb2(5, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Rotation lb_encoder(-17);
 
 //Climb
 pros::ADIDigitalOut climbPTO('H'); 
-pros::ADIDigitalOut climbPiston('A');
-pros::ADIDigitalOut wingPiston('B');
+pros::ADIDigitalOut climbPiston('G');
+pros::ADIDigitalOut wingPiston('H');
 
 

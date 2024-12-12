@@ -5,10 +5,11 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 
-extern bool isStaging;
-extern bool isReturning;
-extern bool isZeroing;
+// extern bool isStaging;
+// extern bool isReturning;
+// extern bool isZeroing;
 extern bool isScoring;
+extern bool isMovingLB;
 extern bool isIntaking;
 extern bool isReverseIntake;
 
@@ -18,7 +19,10 @@ extern bool isClimbing;
 extern bool isRedAlliance;
 extern bool isColorSort;
 
+extern double lbTarget;
+extern double lbLimit;
 
+void set_lb_pos(double target, double limit);
 void STAGE_LADY_BROWN(void* param);
 void INTAKE(void* param);
 void CLIMB(void* param);

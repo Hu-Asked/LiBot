@@ -20,24 +20,14 @@ void initialize() {
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
     if (!pros::competition::is_connected()) {
-        pros::Task screen_task([&]() {
+        pros::Task update_info([&]() {
             while (true) {
                 GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
-                std::string temperature = "Left";
-                for(auto a : LeftDrive.get_temperature_all()) {
-                    temperature += " " + std::to_string(a);
-                }
-                temperature += " Right";
-                for(auto a : RightDrive.get_temperature_all()) {
-                    temperature + " " + std::to_string(a);
-                }
-                temperature += " Intake " + std::to_string(intake1.get_temperature());
-                GHUI::console_print(temperature, 1);
                 pros::delay(25);
             }
         });  
     }
-    colorSensor.set_integration_time(10);
+    colorSensor.set_integration_time(15);
     colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
@@ -50,19 +40,20 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+    wingPiston.set_value(true);
     isRedAlliance = true;
     GHUI::run_selected_auton();
 }
 void opcontrol() {  
+    wingPiston.set_value(true);
     double startTime = pros::millis();
     bool isNotified = false;
     
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     isIntaking = false;
     isReverseIntake = false;
-    isStaging = false;
+    isMovingLB = false;
     isScoring = false;
-    isReturning = false;
 
     while (true) {
         if (!pros::competition::is_connected()) {
@@ -75,13 +66,6 @@ void opcontrol() {
         if(!isClimbing) {
             chassis.arcade(Y, X);
         }
-        if(!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_L2)) {
-            activatelb(-110);
-        } else if (!isZeroing && !isStaging && !isReturning && master.get_digital(DIGITAL_R2)) {
-            activatelb(110);
-        } else if (!isZeroing && !isStaging && !isReturning && !isScoring) { 
-            activatelb(0);
-        }
         if(!isScoring) {
             if (master.get_digital(DIGITAL_R1)) {
                 isIntaking = true;
@@ -92,25 +76,29 @@ void opcontrol() {
             } else {
                 isIntaking = false;
                 isReverseIntake = false;
-            }
+             }
         }
-        if(!isClimbingInitiated) {
-            if(!isZeroing && !isStaging && !isReturning && lb_encoder.get_position() > 16000) {
-                isScoring = false;
+        if(!isClimbingInitiated) {    
+            if(lb_encoder.get_position() >= 16500) {
                 lb1.move(0);
                 lb2.move(0);
-                isReturning = true;
+                set_lb_pos(2000, 25000);
             }
-            if(!isStaging && !isReturning && !isScoring && !isZeroing) {
+            if(!isMovingLB) {
+                if (master.get_digital(DIGITAL_L2)) {
+                    lb1.move(100);
+                    lb2.move(100);
+                } else if (master.get_digital(DIGITAL_R2)) {
+                    lb1.move(-100);
+                    lb2.move(-100);
+                }
                 if (master.get_digital(DIGITAL_UP)) {
-                    intake1.move(0);
-                    intake1.move_relative(-60, 127);
-                    isIntaking = false;
                     isScoring = true;
+                    set_lb_pos(14000, 16000);
                 } else if (master.get_digital(DIGITAL_DOWN)) {
-                    isZeroing = true;
+                    set_lb_pos(150, 16000);
                 } else if (master.get_digital(DIGITAL_LEFT)) {
-                    isStaging = true;
+                    set_lb_pos(2000, 16000);
                 }
             }
         } else {
@@ -121,7 +109,7 @@ void opcontrol() {
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        if (master.get_digital(DIGITAL_L1) && master.get_digital(DIGITAL_R1) && master.get_digital_new_press(DIGITAL_X)) {
+        if (master.get_digital(DIGITAL_L2) && master.get_digital(DIGITAL_R2) && master.get_digital_new_press(DIGITAL_X)) {
             if(!isClimbingInitiated) {
                 master.rumble("--");
                 isClimbingInitiated = true;
