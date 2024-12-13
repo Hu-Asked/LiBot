@@ -5,10 +5,10 @@ void initialize() {
         {
             GHUI::Auton(RedRings, "Red Ringside", GHUI::RED),
             GHUI::Auton(RedMOGO, "Red MOGO Rush", GHUI::RED),
-            GHUI::Auton(RedMOGO2, "Red Ringside Safe", GHUI::RED),
+            GHUI::Auton(RedMOGO2, "Red MOGO Safe", GHUI::RED),
             GHUI::Auton(BlueRings, "Blue Ringside", GHUI::BLUE),
             GHUI::Auton(BlueMOGO, "Blue MOGO Rush", GHUI::BLUE),
-            GHUI::Auton(BlueMOGO2, "Blue Ringside Safe", GHUI::BLUE),
+            GHUI::Auton(BlueMOGO2, "Blue MOGO Safe", GHUI::BLUE),
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
             GHUI::Auton(drive_example, "Drive Test", GHUI::OTHER),
             GHUI::Auton(turn_example, "Turn Test", GHUI::OTHER),
@@ -16,7 +16,7 @@ void initialize() {
     );
     chassis.calibrate();
     lb_encoder.reset_position();
-    pidlb.setExitCondition(100, 100, 1400);
+    pidlb.setExitCondition(100, 150, 2000);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
     if (!pros::competition::is_connected()) {
@@ -50,6 +50,7 @@ void opcontrol() {
     bool isNotified = false;
     
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+
     isIntaking = false;
     isReverseIntake = false;
     isMovingLB = false;
@@ -78,7 +79,7 @@ void opcontrol() {
                 isReverseIntake = false;
              }
         }
-        if(!isClimbingInitiated) {    
+        if(!isClimbingInitiated) {    // plug in rotation sensor if not working
             if(lb_encoder.get_position() >= 16500) {
                 lb1.move(0);
                 lb2.move(0);

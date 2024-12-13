@@ -19,7 +19,7 @@ double PIDController::calculateError(double curPosition, double goal, bool isRev
         Integral = 0;
     }
     if (std::abs(error) <= exitError) {
-        timer += 10;
+        timer += 20;
         if (timer >= exitTime) {
             stop = true;
         }

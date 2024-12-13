@@ -21,7 +21,7 @@ bool isRedAlliance = true;
 
 bool isColorSort = true;
 
-double BLUE_MIN = 200;
+double BLUE_MIN = 170;
 double BLUE_MAX = 260;
 
 double RED_MIN = 0;
@@ -40,6 +40,13 @@ void set_lb_pos(double target, double limit) {
     isMovingLB = true;
 }
 void STAGE_LADY_BROWN(void* param) {
+    // pros::Task track_lb_pos([&]() {
+    //         double start = pros::millis();
+    //         while (true) {
+    //             std::cout << lb_encoder.get_position() << " " << lbTarget << " " << pros::millis() - start << "\n";
+    //         }
+    //     });  
+
     while(true) {
         if (isMovingLB) {
             movelb(lbTarget, 100, lbLimit);
@@ -73,6 +80,7 @@ void STAGE_LADY_BROWN(void* param) {
 
 void INTAKE(void* param) {
     int val = 0;
+    double jamStart = -1;
     bool isWrongColor = false;
     double colorSortDistance = 230; //Degrees after detecting ring to eject
     double distBetweenRings = 400;  //Distance to timeout color detection for
@@ -96,6 +104,22 @@ void INTAKE(void* param) {
                     }
                 }
             }
+            
+            if (intake1.get_power() == 0) {
+                if (jamStart == -1) {
+                    jamStart = pros::millis();
+                }
+                if (pros::millis() - jamStart >= 300) {
+                    activateIntake(-110);
+                    double startRev = pros::millis();
+                    while (pros::millis() - startRev < 150) {
+                        pros::delay(10);
+                    }
+                    jamStart = -1;
+                }
+            } else {
+                jamStart = -1;
+            }
         } else if (isReverseIntake) {
             activateIntake(-110);
         } else if (!isScoring) {
@@ -104,7 +128,7 @@ void INTAKE(void* param) {
         if(isColorSort && !ringsInIntake.empty()) {
             if(fabs(intake1.get_position() - ringsInIntake.front().second) >= colorSortDistance) {
                 if(ringsInIntake.front().first) {
-                    std::cout << ringsInIntake.front().second << " " << intake1.get_position() << " " << ringsInIntake.size() << "\n";
+                    // std::cout << ringsInIntake.front().second << " " << intake1.get_position() << " " << ringsInIntake.size() << "\n";
                     activateIntake(-127);
                     pros::delay(25);
                     activateIntake(0);
@@ -133,7 +157,6 @@ void CLIMB(void* param) {
         if(endClimb) {
             break;
         }
-
         if(isClimbing) {
             climbPTO.set_value(true);
             wingPiston.set_value(false);
@@ -143,10 +166,10 @@ void CLIMB(void* param) {
                         maxClimbTime = 3100;
                         break;
                     case 1:
-                        maxClimbTime = 3850;
+                        maxClimbTime = 3800;
                         break;
                     case 2:
-                        maxClimbTime = 3850;
+                        maxClimbTime = 3800;
                         break;
                 }
                 double startOfClimb = pros::millis();
@@ -204,6 +227,7 @@ void CLIMB(void* param) {
                 LeftDrive.move(0);
                 RightDrive.move(0);
                 climbPiston.set_value(true);
+                pros::delay(100);
             }
         }
         pros::delay(30);

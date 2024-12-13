@@ -207,7 +207,7 @@ void BlueMOGO2() {
     isScoring = true;
 }
 
-void AutonomousSkills() {
+void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     isRedAlliance = true;
     isColorSort = false;
     chassis.setPose(-61, 0, 90);
