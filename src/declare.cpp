@@ -90,22 +90,22 @@ lemlib::Chassis chassis(driveTrain,
 //          OTHER
 
 pros::ADIDigitalOut clampPiston('A');
-pros::ADIDigitalOut doinkerPiston('E');
+pros::ADIDigitalOut doinkerPiston('C');
 pros::ADIDigitalOut intakeSizePiston('F');
 
 
 pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::Optical colorSensor(13);
+// pros::Optical colorSensor(13);
 
 //LadyBrown
-PIDController pidlb(0.00023, 0.00045, 0.00016);
+PIDController pidlb(0.00024, 0.00045, 0.000179);
 pros::Motor lb1(-4, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 pros::Motor lb2(5, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::Rotation lb_encoder(-17);
+pros::Rotation lb_encoder(-6);
 
 //Climb
-pros::ADIDigitalOut climbPTO('H'); 
+pros::ADIDigitalOut climbPTO('B'); 
 pros::ADIDigitalOut climbPiston('G');
 pros::ADIDigitalOut wingPiston('H');
 

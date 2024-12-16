@@ -19,7 +19,7 @@ bool isClimbing = false;
 
 bool isRedAlliance = true;
 
-bool isColorSort = true;
+bool isColorSort = false;
 
 double BLUE_MIN = 170;
 double BLUE_MAX = 260;
@@ -51,6 +51,7 @@ void STAGE_LADY_BROWN(void* param) {
         if (isMovingLB) {
             movelb(lbTarget, 100, lbLimit);
             isMovingLB = false;
+            isScoring = false;
         }
         // if(isStaging) {
         //     limit = 16000;
@@ -86,33 +87,33 @@ void INTAKE(void* param) {
     double distBetweenRings = 400;  //Distance to timeout color detection for
     std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
-        val = colorSensor.get_hue();
+        // val = colorSensor.get_hue();
         if(isIntaking) {  
             activateIntake(110);
-            if(isColorSort && colorSensor.get_proximity() > 200) {
-                if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
-                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-                        ringsInIntake.push_back({true, intake1.get_position()});
-                    } else {
-                        ringsInIntake.push_back({false, intake1.get_position()});
-                    }
-                } else if (!ringsInIntake.empty()) {
-                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-                        ringsInIntake.back().first = true;
-                    }
-                }
-            }
+            // if(isColorSort && colorSensor.get_proximity() > 200) {
+            //     if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
+            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+            //             ringsInIntake.push_back({true, intake1.get_position()});
+            //         } else {
+            //             ringsInIntake.push_back({false, intake1.get_position()});
+            //         }
+            //     } else if (!ringsInIntake.empty()) {
+            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+            //             ringsInIntake.back().first = true;
+            //         }
+            //     }
+            // }
             
-            if (intake1.get_power() == 0) {
+            if (intake1.get_power() == 0 && lb_encoder.get_position() <= 900) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
-                if (pros::millis() - jamStart >= 300) {
-                    activateIntake(-110);
+                if (pros::millis() - jamStart >= 380) {
+                    activateIntake(-127);
                     double startRev = pros::millis();
-                    while (pros::millis() - startRev < 150) {
+                    while (pros::millis() - startRev < 170) {
                         pros::delay(10);
                     }
                     jamStart = -1;
@@ -123,36 +124,38 @@ void INTAKE(void* param) {
         } else if (isReverseIntake) {
             activateIntake(-110);
         } else if (!isScoring) {
+            jamStart = -1;
             activateIntake(0);
         } // when no longer ring detected and is wrong color stop intake
-        if(isColorSort && !ringsInIntake.empty()) {
-            if(fabs(intake1.get_position() - ringsInIntake.front().second) >= colorSortDistance) {
-                if(ringsInIntake.front().first) {
-                    // std::cout << ringsInIntake.front().second << " " << intake1.get_position() << " " << ringsInIntake.size() << "\n";
-                    activateIntake(-127);
-                    pros::delay(25);
-                    activateIntake(0);
-                }
-                ringsInIntake.pop_front();
-            }
-            if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
-                ringsInIntake.pop_back();
-            }
-        }
-        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()) + " " + std::to_string(intake1.get_position()), 0);
-        pros::delay(5);
+        // if(isColorSort && !ringsInIntake.empty()) {
+        //     if(fabs(intake1.get_position() - ringsInIntake.front().second) >= colorSortDistance) {
+        //         if(ringsInIntake.front().first) {
+        //             // std::cout << ringsInIntake.front().second << " " << intake1.get_position() << " " << ringsInIntake.size() << "\n";
+        //             activateIntake(-127);
+        //             pros::delay(25);
+        //             activateIntake(0);
+        //         }
+        //         ringsInIntake.pop_front();
+        //     }
+        //     if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
+        //         ringsInIntake.pop_back();
+        //     }
+        // }
+        // GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()) + " " + std::to_string(intake1.get_position()), 0);
+        pros::delay(10);
     }
 }
 
 void CLIMB(void* param) {
     climbPiston.set_value(true); //release hang
     int currentStage = 0;
-    double pistonExtendTime = 900;
-    double winchOutTime = 1800;
+    double pistonExtendTime = 1100; //900
+    double winchOutTime = 2700;     //2000
     double maxClimbTime = 3700;
     bool endClimb = false;
     pros::delay(500);
     climbPiston.set_value(false);
+    wingPiston.set_value(false);
     while(true) {
         if(endClimb) {
             break;
@@ -163,7 +166,7 @@ void CLIMB(void* param) {
             while (currentStage < 3) {
                 switch (currentStage) {//set distance to level the robot should be off the ground for the respective hang
                     case 0:
-                        maxClimbTime = 3100;
+                        maxClimbTime = 3350;
                         break;
                     case 1:
                         maxClimbTime = 3800;

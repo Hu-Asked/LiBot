@@ -27,8 +27,8 @@ void initialize() {
             }
         });  
     }
-    colorSensor.set_integration_time(15);
-    colorSensor.set_led_pwm(80);
+    // colorSensor.set_integration_time(15);
+    // colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -77,29 +77,25 @@ void opcontrol() {
             } else {
                 isIntaking = false;
                 isReverseIntake = false;
-             }
+            }
         }
+        // GHUI::console_print(std::to_string(lb_encoder.get_position()), 5);
         if(!isClimbingInitiated) {    // plug in rotation sensor if not working
-            if(lb_encoder.get_position() >= 16500) {
+            if(lb_encoder.get_position() >= 16000) {
                 lb1.move(0);
                 lb2.move(0);
-                set_lb_pos(2000, 25000);
+                set_lb_pos(1800, 25000);
             }
             if(!isMovingLB) {
-                if (master.get_digital(DIGITAL_L2)) {
-                    lb1.move(100);
-                    lb2.move(100);
-                } else if (master.get_digital(DIGITAL_R2)) {
-                    lb1.move(-100);
-                    lb2.move(-100);
-                }
                 if (master.get_digital(DIGITAL_UP)) {
                     isScoring = true;
+                    intake1.move(0);
+                    intake1.move_relative(-135, 127);
                     set_lb_pos(14000, 16000);
                 } else if (master.get_digital(DIGITAL_DOWN)) {
-                    set_lb_pos(150, 16000);
+                    set_lb_pos(180, 16000);
                 } else if (master.get_digital(DIGITAL_LEFT)) {
-                    set_lb_pos(2000, 16000);
+                    set_lb_pos(1800, 16000);
                 }
             }
         } else {
@@ -113,6 +109,7 @@ void opcontrol() {
         if (master.get_digital(DIGITAL_L2) && master.get_digital(DIGITAL_R2) && master.get_digital_new_press(DIGITAL_X)) {
             if(!isClimbingInitiated) {
                 master.rumble("--");
+                set_lb_pos(1800, 16000);
                 isClimbingInitiated = true;
                 pros::Task climb(CLIMB, nullptr);
             } else {
