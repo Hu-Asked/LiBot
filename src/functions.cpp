@@ -106,11 +106,11 @@ void INTAKE(void* param) {
             //     }
             // }
             
-            if (intake1.get_power() == 0 && lb_encoder.get_position() <= 900) {
+            if (intake1.get_power() == 0) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
-                if (pros::millis() - jamStart >= 380) {
+                if (pros::millis() - jamStart >= 100) {
                     activateIntake(-127);
                     double startRev = pros::millis();
                     while (pros::millis() - startRev < 170) {

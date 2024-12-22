@@ -22,7 +22,7 @@ void initialize() {
     if (!pros::competition::is_connected()) {
         pros::Task update_info([&]() {
             while (true) {
-                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, fmod(chassis.getPose().theta, 360));
                 pros::delay(25);
             }
         });  

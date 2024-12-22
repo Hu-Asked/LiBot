@@ -1,7 +1,7 @@
 #include "declare.hpp"
 
 const double gearRatio = 36.0/48.0;
-const double trackWidth = 11.4;
+const double trackWidth = 11.4173;
 
 const float DRIVESPEED = 120.0f;
 const int TURNSPEED = 120.0f;
@@ -52,11 +52,11 @@ lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniw
 pros::IMU imu(14);
 
 //          ODOMETRY
-pros::Rotation horizontal_encoder(-8);
+pros::Rotation horizontal_encoder(8);
 pros::Rotation vertical_encoder(9);
 
-lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -3.4);
-lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.307);
+lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -0.0984252);
+lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
 
 lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             nullptr,
@@ -94,7 +94,7 @@ pros::ADIDigitalOut doinkerPiston('C');
 pros::ADIDigitalOut intakeSizePiston('F');
 
 
-pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor intake1(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 // pros::Optical colorSensor(13);
 
