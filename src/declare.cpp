@@ -94,15 +94,15 @@ pros::ADIDigitalOut doinkerPiston('C');
 pros::ADIDigitalOut intakeSizePiston('F');
 
 
-pros::Motor intake1(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 // pros::Optical colorSensor(13);
 
 //LadyBrown
-PIDController pidlb(0.00024, 0.00045, 0.000179);
-pros::Motor lb1(-4, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::Motor lb2(5, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::Rotation lb_encoder(-6);
+lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);
+pros::Motor lb1(-4, pros::MotorGearset::green, pros::MotorUnits::degrees);
+pros::Motor lb2(21, pros::MotorGearset::green, pros::MotorUnits::degrees);
+// pros::Rotation lb_encoder(-6);
 
 //Climb
 pros::ADIDigitalOut climbPTO('B'); 

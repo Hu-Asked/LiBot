@@ -21,6 +21,7 @@ extern bool isColorSort;
 
 extern double lbTarget;
 extern double lbLimit;
+extern bool exitLB;
 
 void set_lb_pos(double target, double limit);
 void STAGE_LADY_BROWN(void* param);

@@ -15,18 +15,17 @@ void initialize() {
         }
     );
     chassis.calibrate();
-    lb_encoder.reset_position();
-    pidlb.setExitCondition(100, 150, 2000);
+    // pidlb.setExitCondition(5, 150, 2000);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
-    if (!pros::competition::is_connected()) {
+    // if (!pros::competition::is_connected()) 
         pros::Task update_info([&]() {
             while (true) {
                 GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, fmod(chassis.getPose().theta, 360));
                 pros::delay(25);
             }
         });  
-    }
+    
     // colorSensor.set_integration_time(15);
     // colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
@@ -54,7 +53,6 @@ void opcontrol() {
     isIntaking = false;
     isReverseIntake = false;
     isMovingLB = false;
-    isScoring = false;
 
     while (true) {
         if (!pros::competition::is_connected()) {
@@ -67,37 +65,40 @@ void opcontrol() {
         if(!isClimbing) {
             chassis.arcade(Y, X);
         }
-        if(!isScoring) {
-            if (master.get_digital(DIGITAL_R1)) {
-                isIntaking = true;
-                isReverseIntake = false;
-            } else if(master.get_digital(DIGITAL_L1)) {
-                isIntaking = false;
-                isReverseIntake = true;
-            } else {
-                isIntaking = false;
-                isReverseIntake = false;
-            }
+        if (master.get_digital(DIGITAL_R1)) {
+            isIntaking = true;
+            isReverseIntake = false;
+        } else if(master.get_digital(DIGITAL_L1)) {
+            isIntaking = false;
+            isReverseIntake = true;
+        } else {
+            isIntaking = false;
+            isReverseIntake = false;
         }
-        // GHUI::console_print(std::to_string(lb_encoder.get_position()), 5);
-        if(!isClimbingInitiated) {    // plug in rotation sensor if not working
-            if(lb_encoder.get_position() >= 16000) {
-                lb1.move(0);
-                lb2.move(0);
-                set_lb_pos(1800, 25000);
-            }
-            if(!isMovingLB) {
-                if (master.get_digital(DIGITAL_UP)) {
-                    isScoring = true;
-                    intake1.move(0);
-                    intake1.move_relative(-135, 127);
-                    set_lb_pos(14000, 16000);
-                } else if (master.get_digital(DIGITAL_DOWN)) {
-                    set_lb_pos(180, 16000);
-                } else if (master.get_digital(DIGITAL_LEFT)) {
-                    set_lb_pos(1800, 16000);
+        double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
+        GHUI::console_print(std::to_string(lb_pos), 5);
+        if(!isClimbingInitiated) {
+            if(master.get_digital_new_press(DIGITAL_LEFT)) {
+                if(lb_pos < 144 && lb_pos > 124) {
+                    set_lb_pos(LB_ZEROED_POSITION, 1200);
+                } else {
+                    if(lb_pos < 0) {
+                        lb1.tare_position();
+                        lb2.tare_position();
+                    }
+                    set_lb_pos(LB_STAGED_POSITION, 1200);
                 }
+            } 
+            if(master.get_digital(DIGITAL_L2)) {
+                exitLB = true;
+                activatelb(-127);
+            } else if(master.get_digital(DIGITAL_R2) && lb_pos < 1010) {
+                exitLB = true;
+                activatelb(127);
+            } else if(exitLB){
+                activatelb(0);
             }
+            
         } else {
             if(master.get_digital_new_press(DIGITAL_UP)) {
                 toggleClimb();
@@ -106,10 +107,10 @@ void opcontrol() {
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        if (master.get_digital(DIGITAL_L2) && master.get_digital(DIGITAL_R2) && master.get_digital_new_press(DIGITAL_X)) {
+        if (master.get_digital_new_press(DIGITAL_X)) {
             if(!isClimbingInitiated) {
                 master.rumble("--");
-                set_lb_pos(1800, 16000);
+                set_lb_pos(150, 1200);
                 isClimbingInitiated = true;
                 pros::Task climb(CLIMB, nullptr);
             } else {

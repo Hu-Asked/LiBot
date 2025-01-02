@@ -41,8 +41,7 @@ extern pros::Motor intake1;
 
 extern pros::Optical colorSensor;
 
-extern lemlib::PID pid_lb;
-extern PIDController pidlb;
+extern lemlib::PID pidlb;
 extern pros::Motor lb1;
 extern pros::Motor lb2;
 extern pros::Rotation lb_encoder;

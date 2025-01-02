@@ -35,10 +35,13 @@ double lbTarget = 0;
 double lbLimit = 0;
 
 void set_lb_pos(double target, double limit) {
+    exitLB = false;
     lbTarget = target;
     lbLimit = limit;
     isMovingLB = true;
 }
+
+bool exitLB = true;
 void STAGE_LADY_BROWN(void* param) {
     // pros::Task track_lb_pos([&]() {
     //         double start = pros::millis();
@@ -49,9 +52,8 @@ void STAGE_LADY_BROWN(void* param) {
 
     while(true) {
         if (isMovingLB) {
-            movelb(lbTarget, 100, lbLimit);
+            movelb(lbTarget, 120, lbLimit);
             isMovingLB = false;
-            isScoring = false;
         }
         // if(isStaging) {
         //     limit = 16000;
@@ -89,7 +91,7 @@ void INTAKE(void* param) {
     while(true) {
         // val = colorSensor.get_hue();
         if(isIntaking) {  
-            activateIntake(110);
+            activateIntake(120);
             // if(isColorSort && colorSensor.get_proximity() > 200) {
             //     if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
             //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
@@ -106,7 +108,7 @@ void INTAKE(void* param) {
             //     }
             // }
             
-            if (intake1.get_power() == 0) {
+            if (intake1.get_power() == 0 && ((lb1.get_position() + lb2.get_position()) / 2 < 120 || (lb1.get_position() + lb2.get_position()) / 2 > 200) && !isIntakeIncreased) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
@@ -122,7 +124,7 @@ void INTAKE(void* param) {
                 jamStart = -1;
             }
         } else if (isReverseIntake) {
-            activateIntake(-110);
+            activateIntake(-120);
         } else if (!isScoring) {
             jamStart = -1;
             activateIntake(0);
@@ -270,23 +272,27 @@ void activatelb(int speed) {
 }
 
 void movelb(double target, double power, double limit) {
-    pidlb.stop = false;
-    pidlb.timer = 0;
-    pidlb.maxTimeTimer = 0;
+    // pidlb.stop = false;
+    // pidlb.timer = 0;
+    // pidlb.maxTimeTimer = 0;
     double temp = power;
-    double max = power + 27.0;
-    bool isReversing = (target - lb_encoder.get_position()) < 0;
+    double max = power;
+    double pos = lb1.get_position() + lb2.get_position();
+    pos /= 2;
+    bool isReversing = (target - pos) < 0;
+    double startOfMove = pros::millis();
     while (true) {
+        pos = (lb1.get_position() + lb2.get_position()) / 2;
         double LPower = power;
         double RPower = power;
-        double error = pidlb.calculateError(lb_encoder.get_position(), target, isReversing);
-        if (pidlb.stop || lb_encoder.get_position() > limit - 500) {
-            break;
-        }
+        double error = pidlb.update(target - pos);
         LPower = LPower * error;
         RPower = RPower * error;
         lb1.move(std::clamp(LPower, -max, max));
         lb2.move(std::clamp(RPower, -max, max));
+        if (exitLB || pros::millis() - startOfMove >= limit) {
+            break;
+        }
         pros::delay(20);
     }
     lb1.move(0);
