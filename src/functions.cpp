@@ -35,6 +35,13 @@ double lbTarget = 0;
 double lbLimit = 0;
 
 void set_lb_pos(double target, double limit) {
+    if(target == LB_STAGED_POSITION) {
+        double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
+        if(lb_pos < 0) {
+            lb1.tare_position();
+            lb2.tare_position();
+        }
+    }
     exitLB = false;
     lbTarget = target;
     lbLimit = limit;
@@ -297,4 +304,12 @@ void movelb(double target, double power, double limit) {
     }
     lb1.move(0);
     lb2.move(0);
+}
+
+double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading) {
+    double true_dist = distance_mm + (offset_in * 25.4);
+    double angle = intended_heading - true_heading;
+    double reset_dist = true_dist * cos(angle);
+    reset_dist /= 25.4;
+    return reset_dist;
 }

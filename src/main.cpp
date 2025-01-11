@@ -3,10 +3,10 @@
 void initialize() {
     GHUI::initialize_auton_selector(
         {
-            GHUI::Auton(RedRings, "Red Ringside", GHUI::RED),
+            GHUI::Auton(RedRings, "6 ring + 1", GHUI::RED),
             GHUI::Auton(RedMOGO, "Red MOGO Rush", GHUI::RED),
             GHUI::Auton(RedMOGO2, "Red MOGO Safe", GHUI::RED),
-            GHUI::Auton(BlueRings, "Blue Ringside", GHUI::BLUE),
+            GHUI::Auton(BlueRings, "6 ring + 1", GHUI::BLUE),
             GHUI::Auton(BlueMOGO, "Blue MOGO Rush", GHUI::BLUE),
             GHUI::Auton(BlueMOGO2, "Blue MOGO Safe", GHUI::BLUE),
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
@@ -15,13 +15,12 @@ void initialize() {
         }
     );
     chassis.calibrate();
-    // pidlb.setExitCondition(5, 150, 2000);
     lb1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     lb2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); 
     // if (!pros::competition::is_connected()) 
-        pros::Task update_info([&]() {
+        pros::Task update_info([&]() {  
             while (true) {
-                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, fmod(chassis.getPose().theta, 360));
+                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
                 pros::delay(25);
             }
         });  
@@ -39,12 +38,10 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    wingPiston.set_value(true);
     isRedAlliance = true;
     GHUI::run_selected_auton();
 }
 void opcontrol() {  
-    wingPiston.set_value(true);
     double startTime = pros::millis();
     bool isNotified = false;
     
@@ -82,10 +79,6 @@ void opcontrol() {
                 if(lb_pos < 144 && lb_pos > 124) {
                     set_lb_pos(LB_ZEROED_POSITION, 1200);
                 } else {
-                    if(lb_pos < 0) {
-                        lb1.tare_position();
-                        lb2.tare_position();
-                    }
                     set_lb_pos(LB_STAGED_POSITION, 1200);
                 }
             } 

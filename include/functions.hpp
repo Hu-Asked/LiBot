@@ -35,5 +35,6 @@ void toggleIntakeCount();
 void toggleClimb();
 void activatelb(int speed);
 void movelb(double target, double power, double limit);
+double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading);
 
 #endif  // FUNCTIONS_HPP

@@ -33,6 +33,8 @@ extern lemlib::Chassis chassis;
 
 extern pros::IMU imu;
 
+extern pros::Distance rightResetSensor;
+
 extern pros::ADIDigitalOut clampPiston;
 extern pros::ADIDigitalOut doinkerPiston;
 extern pros::ADIDigitalOut intakeSizePiston;

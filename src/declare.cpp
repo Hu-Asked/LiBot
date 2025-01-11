@@ -55,7 +55,7 @@ pros::IMU imu(14);
 pros::Rotation horizontal_encoder(8);
 pros::Rotation vertical_encoder(9);
 
-lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -0.0984252);
+lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -0.314961);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
 
 lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
@@ -88,6 +88,8 @@ lemlib::Chassis chassis(driveTrain,
 );
 
 //          OTHER
+
+pros::Distance rightResetSensor('B');
 
 pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut doinkerPiston('C');
