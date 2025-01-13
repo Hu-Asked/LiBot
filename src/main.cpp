@@ -59,9 +59,9 @@ void opcontrol() {
 
         int Y = master.get_analog(ANALOG_LEFT_Y);
         int X = master.get_analog(ANALOG_RIGHT_X);
-        if(!isClimbing) {
+        // if(!isClimbing) {
             chassis.arcade(Y, X);
-        }
+        // }
         if (master.get_digital(DIGITAL_R1)) {
             isIntaking = true;
             isReverseIntake = false;
@@ -73,8 +73,8 @@ void opcontrol() {
             isReverseIntake = false;
         }
         double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
-        GHUI::console_print(std::to_string(lb_pos), 5);
-        if(!isClimbingInitiated) {
+        GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()), 5);
+        // if(!isClimbingInitiated) {
             if(master.get_digital_new_press(DIGITAL_LEFT)) {
                 if(lb_pos < 144 && lb_pos > 124) {
                     set_lb_pos(LB_ZEROED_POSITION, 1200);
@@ -92,25 +92,28 @@ void opcontrol() {
                 activatelb(0);
             }
             
-        } else {
-            if(master.get_digital_new_press(DIGITAL_UP)) {
-                toggleClimb();
-            }
-        }
+        // } else {
+        //     if(master.get_digital_new_press(DIGITAL_UP)) {
+        //         toggleClimb();
+        //     }
+        // }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
-        if (master.get_digital_new_press(DIGITAL_X)) {
-            if(!isClimbingInitiated) {
-                master.rumble("--");
-                set_lb_pos(150, 1200);
-                isClimbingInitiated = true;
-                pros::Task climb(CLIMB, nullptr);
-            } else {
-                master.rumble(".");
-                isClimbing = !isClimbing;
-            }
+        if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_X)) {
+            isColorSort = !isColorSort;
         }
+        // if (master.get_digital_new_press(DIGITAL_X)) {
+        //     if(!isClimbingInitiated) {
+        //         master.rumble("--");
+        //         set_lb_pos(150, 1200);
+        //         isClimbingInitiated = true;
+        //         pros::Task climb(CLIMB, nullptr);
+        //     } else {
+        //         master.rumble(".");
+        //         isClimbing = !isClimbing;
+        //     }
+        // }
         
         if(!isNotified && pros::millis() - startTime >= 85000) {
             master.rumble("--------");

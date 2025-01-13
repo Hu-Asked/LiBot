@@ -12,7 +12,7 @@ const int TURNSPEED = 120.0f;
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //          PID
-lemlib::ControllerSettings lateralController( 7, // proportional gain (kP) 7 not bad
+lemlib::ControllerSettings lateralController( 7.4, // proportional gain (kP) 7 not bad
                                               0, // integral gain (kI)
                                               2.5, // derivative gain (kD) 
                                               0, // anti windup
@@ -98,7 +98,8 @@ pros::ADIDigitalOut intakeSizePiston('F');
 
 pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-// pros::Optical colorSensor(13);
+pros::Optical colorSensor(13);
+pros::Distance distanceSensor(12);
 
 //LadyBrown
 lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);
