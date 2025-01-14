@@ -35,13 +35,6 @@ double lbTarget = 0;
 double lbLimit = 0;
 
 void set_lb_pos(double target, double limit) {
-    if(target == LB_STAGED_POSITION) {
-        double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
-        if(lb_pos < 0) {
-            lb1.tare_position();
-            lb2.tare_position();
-        }
-    }
     exitLB = false;
     lbTarget = target;
     lbLimit = limit;
@@ -66,24 +59,24 @@ void INTAKE(void* param) {
     double distBetweenRings = 400;  //Distance to timeout color detection for
     std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
-        val = colorSensor.get_hue();
+        // val = colorSensor.get_hue();
         if(isIntaking) {  
             activateIntake(120);
-            if(isColorSort && colorSensor.get_proximity() > 200) {
-                if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
-                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-                        ringsInIntake.push_back({true, intake1.get_position()});
-                    } else {
-                        ringsInIntake.push_back({false, intake1.get_position()});
-                    }
-                } else if (!ringsInIntake.empty()) {
-                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-                        ringsInIntake.back().first = true;
-                    }
-                }
-            }
+            // if(isColorSort && colorSensor.get_proximity() > 200) {
+            //     if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
+            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+            //             ringsInIntake.push_back({true, intake1.get_position()});
+            //         } else {
+            //             ringsInIntake.push_back({false, intake1.get_position()});
+            //         }
+            //     } else if (!ringsInIntake.empty()) {
+            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+            //             ringsInIntake.back().first = true;
+            //         }
+            //     }
+            // }
             
             if (intake1.get_power() == 0 && ((lb1.get_position() + lb2.get_position()) / 2 < 120 || (lb1.get_position() + lb2.get_position()) / 2 > 200) && !isIntakeIncreased) {
                 if (jamStart == -1) {
@@ -106,19 +99,19 @@ void INTAKE(void* param) {
             jamStart = -1;
             activateIntake(0);
         }
-        if(isColorSort && !ringsInIntake.empty()) {
-            if(ringsInIntake.front().first) { //ring is to be ejected
-                if(distanceSensor.get_distance() < 50) { //ring no longer past colorsensor
-                    intake1.move(-127);
-                    pros::delay(50);
-                    intake1.move(0);
-                    ringsInIntake.pop_front();
-                }
-            }
-            if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
-                ringsInIntake.pop_back();
-            }
-        }
+        // if(isColorSort && !ringsInIntake.empty()) {
+        //     if(ringsInIntake.front().first) { //ring is to be ejected
+        //         if(distanceSensor.get_distance() < 50) { //ring no longer past colorsensor
+        //             intake1.move(-127);
+        //             pros::delay(50);
+        //             intake1.move(0);
+        //             ringsInIntake.pop_front();
+        //         }
+        //     }
+        //     if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
+        //         ringsInIntake.pop_back();
+        //     }
+        // }
         // GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()) + " " + std::to_string(intake1.get_position()), 0);
         pros::delay(10);
     }
@@ -281,4 +274,15 @@ double calculate_reset_distance(double offset_in, double distance_mm, double int
     double reset_dist = true_dist * cos(angle);
     reset_dist /= 25.4;
     return reset_dist;
+}
+
+double calculate_relative_move(double dist_in) {
+    double heading = fmod(chassis.getPose().theta, 360);
+    double x = chassis.getPose().x;
+    double y = chassis.getPose().y;
+    
+    
+    double targetx = x + dist_in * sin(heading);
+    double targety = y + dist_in * cos(heading);
+    return targetx, targety;
 }

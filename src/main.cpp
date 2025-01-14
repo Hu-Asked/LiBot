@@ -51,6 +51,8 @@ void opcontrol() {
     isReverseIntake = false;
     isMovingLB = false;
 
+    lb1.tare_position();
+    lb2.tare_position();
     while (true) {
         if (!pros::competition::is_connected()) {
             if (master.get_digital_new_press(DIGITAL_RIGHT))

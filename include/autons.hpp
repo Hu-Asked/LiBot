@@ -19,8 +19,5 @@ void AutonomousSkills();
 void drive_example();
 void turn_example();
 void curve_example();
-void interfered_example();
-
-void default_constants();
 
 #endif  // AUTONS_HPP

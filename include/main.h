@@ -35,7 +35,7 @@
 #define PROS_USE_LITERALS
 #define LB_STAGED_POSITION 134
 #define LB_SCORED_POSITION 860
-#define LB_ZEROED_POSITION -25
+#define LB_ZEROED_POSITION 30
 
 #include "api.h"
 #include "pros/apix.h"
