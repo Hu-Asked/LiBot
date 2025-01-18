@@ -36,6 +36,7 @@ void toggleClimb();
 void activatelb(int speed);
 void movelb(double target, double power, double limit);
 double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading);
-double calculate_relative_move(double dist_in);
+double calculate_relative_move_x(double dist_in);
+double calculate_relative_move_y(double dist_in);
 
 #endif  // FUNCTIONS_HPP

@@ -19,9 +19,9 @@ bool isClimbing = false;
 
 bool isRedAlliance = true;
 
-bool isColorSort = false;
+bool isColorSort = true;
 
-double BLUE_MIN = 170;
+double BLUE_MIN = 150;
 double BLUE_MAX = 260;
 
 double RED_MIN = 0;
@@ -52,37 +52,38 @@ void STAGE_LADY_BROWN(void* param) {
     }
 }
 
+bool isAntiJam = true;
 void INTAKE(void* param) {
     int val = 0;
     double jamStart = -1;
     bool isWrongColor = false;
-    double distBetweenRings = 400;  //Distance to timeout color detection for
+    double distBetweenRings = 700;  //Distance to timeout color detection for
     std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
-        // val = colorSensor.get_hue();
+        val = colorSensor.get_hue();
         if(isIntaking) {  
             activateIntake(120);
-            // if(isColorSort && colorSensor.get_proximity() > 200) {
-            //     if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.front().second) >= distBetweenRings) {
-            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-            //             ringsInIntake.push_back({true, intake1.get_position()});
-            //         } else {
-            //             ringsInIntake.push_back({false, intake1.get_position()});
-            //         }
-            //     } else if (!ringsInIntake.empty()) {
-            //         if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
-            //             (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
-            //             ringsInIntake.back().first = true;
-            //         }
-            //     }
-            // }
+            if(isColorSort && colorSensor.get_proximity() > 150) {
+                if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.back().second) >= distBetweenRings) {
+                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+                        ringsInIntake.push_back({true, intake1.get_position()});
+                    } else {
+                        ringsInIntake.push_back({false, intake1.get_position()});
+                    }
+                } else if (!ringsInIntake.empty()) {
+                    if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
+                        (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+                        ringsInIntake.back().first = true;
+                    }
+                }
+            }
             
-            if (intake1.get_power() == 0 && ((lb1.get_position() + lb2.get_position()) / 2 < 120 || (lb1.get_position() + lb2.get_position()) / 2 > 200) && !isIntakeIncreased) {
+            if (isAntiJam && intake1.get_power() == 0 && ((lb1.get_position() + lb2.get_position()) / 2 < LB_STAGED_POSITION - 15 || (lb1.get_position() + lb2.get_position()) / 2 > LB_STAGED_POSITION + 15) && !isIntakeIncreased) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
-                if (pros::millis() - jamStart >= 100) {
+                if (pros::millis() - jamStart >= 250) {
                     activateIntake(-127);
                     double startRev = pros::millis();
                     while (pros::millis() - startRev < 170) {
@@ -99,20 +100,20 @@ void INTAKE(void* param) {
             jamStart = -1;
             activateIntake(0);
         }
-        // if(isColorSort && !ringsInIntake.empty()) {
-        //     if(ringsInIntake.front().first) { //ring is to be ejected
-        //         if(distanceSensor.get_distance() < 50) { //ring no longer past colorsensor
-        //             intake1.move(-127);
-        //             pros::delay(50);
-        //             intake1.move(0);
-        //             ringsInIntake.pop_front();
-        //         }
-        //     }
-        //     if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
-        //         ringsInIntake.pop_back();
-        //     }
-        // }
-        // GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(colorSensor.get_hue()) + " " + std::to_string(intake1.get_position()), 0);
+        if(isColorSort && !ringsInIntake.empty()) {
+            if(distanceSensor.get_distance() < 100) {
+                if(ringsInIntake.front().first) {
+                    pros::delay(70);
+                    intake1.move(-127);
+                    pros::delay(100);
+                    intake1.move(0);
+                }
+                ringsInIntake.pop_front();
+            } else if(fabs(intake1.get_position()) < fabs(ringsInIntake.back().second) && colorSensor.get_proximity() < 70) { //ring no longer past colorsensor
+                ringsInIntake.pop_back();
+            } else if(fabs(intake1.get_position() - ringsInIntake.front().second >= 2000)) ringsInIntake.pop_front();
+        }
+        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(val) + " " + std::to_string(intake1.get_position()) + " " + std::to_string(ringsInIntake.size()), 0);
         pros::delay(10);
     }
 }
@@ -271,18 +272,30 @@ void movelb(double target, double power, double limit) {
 double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading) {
     double true_dist = distance_mm + (offset_in * 25.4);
     double angle = intended_heading - true_heading;
-    double reset_dist = true_dist * cos(angle);
+    double angle_rad = angle * M_PI / 180;
+    double reset_dist = true_dist * cos(angle_rad);
     reset_dist /= 25.4;
     return reset_dist;
 }
 
-double calculate_relative_move(double dist_in) {
+double calculate_relative_move_x(double dist_in) {
     double heading = fmod(chassis.getPose().theta, 360);
+    double heading_rad = heading * M_PI / 180;
     double x = chassis.getPose().x;
     double y = chassis.getPose().y;
     
+    double targetx = x + dist_in * sin(heading_rad);
+    double targety = y + dist_in * cos(heading_rad);
+    return targetx;
+}
+
+double calculate_relative_move_y(double dist_in) {
+    double heading = fmod(chassis.getPose().theta, 360);
+    double heading_rad = heading * M_PI / 180;
+    double x = chassis.getPose().x;
+    double y = chassis.getPose().y;
     
-    double targetx = x + dist_in * sin(heading);
-    double targety = y + dist_in * cos(heading);
-    return targetx, targety;
+    double targetx = x + dist_in * sin(heading_rad);
+    double targety = y + dist_in * cos(heading_rad);
+    return targety;
 }

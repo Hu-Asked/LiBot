@@ -89,7 +89,7 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::Distance rightResetSensor('B');
+pros::Distance rightResetSensor(6);
 
 pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut doinkerPiston('C');
@@ -98,8 +98,8 @@ pros::ADIDigitalOut intakeSizePiston('F');
 
 pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::Optical colorSensor(13);
-pros::Distance distanceSensor(12);
+pros::Optical colorSensor(7);
+pros::Distance distanceSensor(1);
 
 //LadyBrown
 lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);

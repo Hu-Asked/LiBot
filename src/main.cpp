@@ -3,10 +3,10 @@
 void initialize() {
     GHUI::initialize_auton_selector(
         {
-            GHUI::Auton(RedRings, "6 ring + 1", GHUI::RED),
+            GHUI::Auton(RedRings, "6 ring + 1 (R)", GHUI::RED),
             GHUI::Auton(RedMOGO, "Red MOGO Rush", GHUI::RED),
             GHUI::Auton(RedMOGO2, "Red MOGO Safe", GHUI::RED),
-            GHUI::Auton(BlueRings, "6 ring + 1", GHUI::BLUE),
+            GHUI::Auton(BlueRings, "6 ring + 1 (B)", GHUI::BLUE),
             GHUI::Auton(BlueMOGO, "Blue MOGO Rush", GHUI::BLUE),
             GHUI::Auton(BlueMOGO2, "Blue MOGO Safe", GHUI::BLUE),
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
@@ -25,8 +25,8 @@ void initialize() {
             }
         });  
     
-    // colorSensor.set_integration_time(15);
-    // colorSensor.set_led_pwm(80);
+    colorSensor.set_integration_time(15);
+    colorSensor.set_led_pwm(80);
     pros::Task lb_stage(STAGE_LADY_BROWN, nullptr);
     pros::Task intake(INTAKE, nullptr);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -38,7 +38,6 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-    isRedAlliance = true;
     GHUI::run_selected_auton();
 }
 void opcontrol() {  
@@ -50,9 +49,6 @@ void opcontrol() {
     isIntaking = false;
     isReverseIntake = false;
     isMovingLB = false;
-
-    lb1.tare_position();
-    lb2.tare_position();
     while (true) {
         if (!pros::competition::is_connected()) {
             if (master.get_digital_new_press(DIGITAL_RIGHT))
@@ -78,11 +74,7 @@ void opcontrol() {
         GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()), 5);
         // if(!isClimbingInitiated) {
             if(master.get_digital_new_press(DIGITAL_LEFT)) {
-                if(lb_pos < 144 && lb_pos > 124) {
-                    set_lb_pos(LB_ZEROED_POSITION, 1200);
-                } else {
-                    set_lb_pos(LB_STAGED_POSITION, 1200);
-                }
+                set_lb_pos(LB_STAGED_POSITION, 1200);
             } 
             if(master.get_digital(DIGITAL_L2)) {
                 exitLB = true;
