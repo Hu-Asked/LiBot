@@ -20,7 +20,7 @@ void initialize() {
     // if (!pros::competition::is_connected()) 
         pros::Task update_info([&]() {  
             while (true) {
-                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+                GHUI::update_pos(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta, 3);
                 pros::delay(25);
             }
         });  
@@ -71,6 +71,7 @@ void opcontrol() {
             isReverseIntake = false;
         }
         double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
+        GHUI::console_print(std::to_string(-70 + calculate_reset_distance(3.3, leftResetSensor.get_distance(), 0, chassis.getPose().theta)), 0);
         GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()), 5);
         // if(!isClimbingInitiated) {
             if(master.get_digital_new_press(DIGITAL_LEFT)) {
@@ -92,12 +93,12 @@ void opcontrol() {
         //     }
         // }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
-        if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
-        if (master.get_digital_new_press(DIGITAL_Y)) toggleDoinker();
+        // if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
+        if (master.get_digital_new_press(DIGITAL_B)) toggleRightDoinker();
         if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_X)) {
             isColorSort = !isColorSort;
         }
-        // if (master.get_digital_new_press(DIGITAL_X)) {
+        // if (master.get_digital_new_press(DIGITAL_Y)) {
         //     if(!isClimbingInitiated) {
         //         master.rumble("--");
         //         set_lb_pos(150, 1200);
@@ -109,7 +110,7 @@ void opcontrol() {
         //     }
         // }
         
-        if(!isNotified && pros::millis() - startTime >= 85000) {
+        if(!isNotified && pros::millis() - startTime >= 70000) {
             master.rumble("--------");
             isNotified = true;
         }

@@ -41,12 +41,13 @@ class OdomSensors {
          * @endcode
          */
         OdomSensors(TrackingWheel* vertical1, TrackingWheel* vertical2, TrackingWheel* horizontal1,
-                    TrackingWheel* horizontal2, pros::Imu* imu);
+                    TrackingWheel* horizontal2, pros::Imu* imu, double imuScalingConstant);
         TrackingWheel* vertical1;
         TrackingWheel* vertical2;
         TrackingWheel* horizontal1;
         TrackingWheel* horizontal2;
         pros::Imu* imu;
+        double imuScalingConstant;
 };
 
 /**

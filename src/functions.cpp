@@ -62,7 +62,7 @@ void INTAKE(void* param) {
     while(true) {
         val = colorSensor.get_hue();
         if(isIntaking) {  
-            activateIntake(120);
+            activateIntake(127);
             if(isColorSort && colorSensor.get_proximity() > 150) {
                 if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.back().second) >= distBetweenRings) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
@@ -95,7 +95,7 @@ void INTAKE(void* param) {
                 jamStart = -1;
             }
         } else if (isReverseIntake) {
-            activateIntake(-120);
+            activateIntake(-127);
         } else if (!isScoring) {
             jamStart = -1;
             activateIntake(0);
@@ -113,7 +113,7 @@ void INTAKE(void* param) {
                 ringsInIntake.pop_back();
             } else if(fabs(intake1.get_position() - ringsInIntake.front().second >= 2000)) ringsInIntake.pop_front();
         }
-        GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(val) + " " + std::to_string(intake1.get_position()) + " " + std::to_string(ringsInIntake.size()), 0);
+        // GHUI::console_print(std::to_string(colorSensor.get_proximity()) + " " + std::to_string(val) + " " + std::to_string(intake1.get_position()) + " " + std::to_string(ringsInIntake.size()), 0);
         pros::delay(10);
     }
 }
@@ -220,8 +220,13 @@ void toggleMOGO() {
     isClamped = !isClamped;
 }
 
-void toggleDoinker() {
-    doinkerPiston.set_value(!isLifted);
+void toggleLeftDoinker() {
+    leftDoinkerPiston.set_value(!isLifted);
+    isLifted = !isLifted;
+}
+
+void toggleRightDoinker() {
+    rightDoinkerPiston.set_value(!isLifted);
     isLifted = !isLifted;
 }
 
@@ -251,6 +256,7 @@ void movelb(double target, double power, double limit) {
     pos /= 2;
     bool isReversing = (target - pos) < 0;
     double startOfMove = pros::millis();
+    double exitTime = 0;
     while (true) {
         pos = (lb1.get_position() + lb2.get_position()) / 2;
         double LPower = power;
@@ -260,7 +266,15 @@ void movelb(double target, double power, double limit) {
         RPower = RPower * error;
         lb1.move(std::clamp(LPower, -max, max));
         lb2.move(std::clamp(RPower, -max, max));
-        if (exitLB || pros::millis() - startOfMove >= limit) {
+        if(pos < target + 2 && pos > target - 2) {
+            exitTime++;
+        } else {
+            exitTime = 0;
+        }
+        if(exitTime >= 3 || pros::millis() - startOfMove >= limit) {
+            exitLB = true;
+        }
+        if (exitLB) {
             break;
         }
         pros::delay(20);

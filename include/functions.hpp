@@ -30,7 +30,8 @@ void CLIMB(void* param);
 
 void activateIntake(int speed);
 void toggleMOGO();
-void toggleDoinker();
+void toggleLeftDoinker();
+void toggleRightDoinker();
 void toggleIntakeCount();
 void toggleClimb();
 void activatelb(int speed);

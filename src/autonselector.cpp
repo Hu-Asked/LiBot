@@ -121,9 +121,9 @@ namespace GHUI {
         lv_obj_align(consoleText[line], LV_ALIGN_TOP_LEFT, 0, (20 * line) - 20);
     }
 
-    void update_pos(double x, double y, double theta) {
+    void update_pos(double x, double y, double theta, int precision) {
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(3) << x << ", " << y << ", " << theta;
+        ss << std::fixed << std::setprecision(precision) << x << ", " << y << ", " << theta;
         std::string pos = ss.str();
         lv_label_set_text(posLabel, pos.c_str());
     }

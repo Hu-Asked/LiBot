@@ -44,25 +44,26 @@ lemlib::ControllerSettings angularController( 2.2, // proportional gain (kP) //2
 // pros::Motor m5(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 // pros::Motor m6(6, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::MotorGroup LeftDrive({-18, -19, 20}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::MotorGroup RightDrive({15, 16, -17}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup LeftDrive({14, -15, -16}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup RightDrive({18, -19, 20}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_275, 450, 2);
 
-pros::IMU imu(14);
+pros::IMU imu(10);
 
 //          ODOMETRY
 pros::Rotation horizontal_encoder(8);
 pros::Rotation vertical_encoder(9);
 
-lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -0.314961);
+lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 0.07874);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
 
 lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             nullptr,
                             &horizontalTrackingWheel, //horizontal tracking wheel
                             nullptr,
-                            &imu
+                            &imu,
+                            360/364.394047619
 );
 
 
@@ -89,22 +90,23 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::Distance rightResetSensor(6);
+pros::Distance leftResetSensor(11);
 
 pros::ADIDigitalOut clampPiston('A');
-pros::ADIDigitalOut doinkerPiston('C');
+pros::ADIDigitalOut leftDoinkerPiston('H');
+pros::ADIDigitalOut rightDoinkerPiston('G');
 pros::ADIDigitalOut intakeSizePiston('F');
 
 
-pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor intake1(11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::Optical colorSensor(7);
-pros::Distance distanceSensor(1);
+pros::Optical colorSensor(4);
+pros::Distance distanceSensor(3);
 
 //LadyBrown
 lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);
-pros::Motor lb1(-4, pros::MotorGearset::green, pros::MotorUnits::degrees);
-pros::Motor lb2(21, pros::MotorGearset::green, pros::MotorUnits::degrees);
+pros::Motor lb1(-1, pros::MotorGearset::green, pros::MotorUnits::degrees);
+pros::Motor lb2(2, pros::MotorGearset::green, pros::MotorUnits::degrees);
 // pros::Rotation lb_encoder(-6);
 
 //Climb

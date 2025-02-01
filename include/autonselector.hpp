@@ -32,7 +32,7 @@ namespace GHUI {
     void console_print(std::string text, int line);
     void run_selected_auton();
 
-    void update_pos(double x, double y, double theta);
+    void update_pos(double x, double y, double theta, int precision);
     void change_auton_event(lv_event_t* e); 
     void change_selected_auton(int index);
     void load_selected_auton();

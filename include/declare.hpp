@@ -33,10 +33,11 @@ extern lemlib::Chassis chassis;
 
 extern pros::IMU imu;
 
-extern pros::Distance rightResetSensor;
+extern pros::Distance leftResetSensor;
 
 extern pros::ADIDigitalOut clampPiston;
-extern pros::ADIDigitalOut doinkerPiston;
+extern pros::ADIDigitalOut leftDoinkerPiston;
+extern pros::ADIDigitalOut rightDoinkerPiston;
 extern pros::ADIDigitalOut intakeSizePiston;
 
 extern pros::Motor intake1;

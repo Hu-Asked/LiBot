@@ -33,9 +33,11 @@
  * For instance, you can do `4_mtr = 50` to set motor 4's target velocity to 50
  */
 #define PROS_USE_LITERALS
-#define LB_STAGED_POSITION 104
-#define LB_SCORED_POSITION 725
-#define LB_ZEROED_POSITION 10
+#define LB_STAGED_POSITION 170 //104
+#define LB_WALLSTAKE_POSITION 640
+#define LB_ALLIANCESTAKE_POSITION 800
+#define LB_BACKPACK_POSITION 300
+#define LB_ZEROED_POSITION 15
 
 #include "api.h"
 #include "pros/apix.h"
