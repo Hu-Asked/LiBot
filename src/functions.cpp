@@ -19,7 +19,7 @@ bool isClimbing = false;
 
 bool isRedAlliance = true;
 
-bool isColorSort = true;
+bool isColorSort = false;
 
 double BLUE_MIN = 150;
 double BLUE_MAX = 260;
@@ -41,17 +41,30 @@ void set_lb_pos(double target, double limit) {
     isMovingLB = true;
 }
 
+bool isMovingLbNoTimeout = false;
+
+void set_lb_pos_climb(double target, double limit) {
+    exitLB = false;
+    lbTarget = target;
+    lbLimit = limit;
+    isMovingLbNoTimeout = true;
+}
+
 bool exitLB = true;
 void STAGE_LADY_BROWN(void* param) {
     while(true) {
         if (isMovingLB) {
-            movelb(lbTarget, 120, lbLimit);
+            movelb(lbTarget, 120, lbLimit, true);
             isMovingLB = false;
+        }
+        if(isMovingLbNoTimeout) {
+            movelb(lbTarget, 120, lbLimit, false);
+            isMovingLbNoTimeout = false;
         }
         pros::delay(20);
     }
 }
-
+bool isSavingRing = false;
 bool isAntiJam = true;
 void INTAKE(void* param) {
     int val = 0;
@@ -61,9 +74,9 @@ void INTAKE(void* param) {
     std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
     while(true) {
         val = colorSensor.get_hue();
-        if(isIntaking) {  
+        if(isIntaking) { 
             activateIntake(127);
-            if(isColorSort && colorSensor.get_proximity() > 150) {
+            if(isColorSort && colorSensor.get_proximity() > 200) {
                 if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.back().second) >= distBetweenRings) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
                         (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
@@ -78,15 +91,19 @@ void INTAKE(void* param) {
                     }
                 }
             }
-            
-            if (isAntiJam && intake1.get_power() == 0 && ((lb1.get_position() + lb2.get_position()) / 2 < LB_STAGED_POSITION - 15 || (lb1.get_position() + lb2.get_position()) / 2 > LB_STAGED_POSITION + 15) && !isIntakeIncreased) {
+            if(isSavingRing && colorSensor.get_proximity() > 200) {
+                isIntaking = false;
+                isSavingRing = false;
+                activateIntake(0);
+            }
+            if (isAntiJam && intake1.get_power() == 0 && (((lb1.get_position() + lb2.get_position()) / 2 < LB_STAGED_POSITION - 15 || (lb1.get_position() + lb2.get_position()) / 2 > LB_STAGED_POSITION + 15) || colorSensor.get_proximity() >= 210 && ringsInIntake.size() < 2)) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
-                if (pros::millis() - jamStart >= 250) {
+                if (pros::millis() - jamStart >= 150) {
                     activateIntake(-127);
                     double startRev = pros::millis();
-                    while (pros::millis() - startRev < 170) {
+                    while (pros::millis() - startRev < 100) {
                         pros::delay(10);
                     }
                     jamStart = -1;
@@ -119,22 +136,18 @@ void INTAKE(void* param) {
 }
 
 void CLIMB(void* param) {
-    climbPiston.set_value(true); //release hang
     int currentStage = 0;
     double pistonExtendTime = 1100; //900
     double winchOutTime = 2700;     //2000
     double maxClimbTime = 3700;
     bool endClimb = false;
     pros::delay(500);
-    climbPiston.set_value(false);
-    wingPiston.set_value(false);
     while(true) {
         if(endClimb) {
             break;
         }
         if(isClimbing) {
             climbPTO.set_value(true);
-            wingPiston.set_value(false);
             while (currentStage < 3) {
                 switch (currentStage) {//set distance to level the robot should be off the ground for the respective hang
                     case 0:
@@ -246,7 +259,7 @@ void activatelb(int speed) {
     lb2.move(speed);
 }
 
-void movelb(double target, double power, double limit) {
+void movelb(double target, double power, double limit, bool timeOut) {
     // pidlb.stop = false;
     // pidlb.timer = 0;
     // pidlb.maxTimeTimer = 0;
@@ -266,7 +279,7 @@ void movelb(double target, double power, double limit) {
         RPower = RPower * error;
         lb1.move(std::clamp(LPower, -max, max));
         lb2.move(std::clamp(RPower, -max, max));
-        if(pos < target + 2 && pos > target - 2) {
+        if(timeOut && pos < target + 2 && pos > target - 2) {
             exitTime++;
         } else {
             exitTime = 0;

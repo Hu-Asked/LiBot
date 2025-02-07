@@ -10,10 +10,10 @@ extern const int SWING_SPEED;
 
 void RedRings();
 void RedMOGO();
-void RedMOGO2();
+void RedSAWP();
 void BlueRings();
 void BlueMOGO();
-void BlueMOGO2();
+void BlueSAWP();
 void AutonomousSkills();
 
 void drive_example();

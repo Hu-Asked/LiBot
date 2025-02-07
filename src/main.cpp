@@ -5,10 +5,10 @@ void initialize() {
         {
             GHUI::Auton(RedRings, "6 ring + 1 (R)", GHUI::RED),
             GHUI::Auton(RedMOGO, "Red MOGO Rush", GHUI::RED),
-            GHUI::Auton(RedMOGO2, "Red MOGO Safe", GHUI::RED),
-            GHUI::Auton(BlueRings, "6 ring + 1 (B)", GHUI::BLUE),
+            GHUI::Auton(RedSAWP, "Red SAWP", GHUI::RED),
+            GHUI::Auton(BlueRings, "Ring Rush (B)", GHUI::BLUE),
             GHUI::Auton(BlueMOGO, "Blue MOGO Rush", GHUI::BLUE),
-            GHUI::Auton(BlueMOGO2, "Blue MOGO Safe", GHUI::BLUE),
+            GHUI::Auton(BlueSAWP, "Blue SAWP", GHUI::BLUE),
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
             GHUI::Auton(drive_example, "Drive Test", GHUI::OTHER),
             GHUI::Auton(turn_example, "Turn Test", GHUI::OTHER),
@@ -72,8 +72,8 @@ void opcontrol() {
         }
         double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
         GHUI::console_print(std::to_string(-70 + calculate_reset_distance(3.3, leftResetSensor.get_distance(), 0, chassis.getPose().theta)), 0);
-        GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()), 5);
-        // if(!isClimbingInitiated) {
+        GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()) + " " + std::to_string(colorSensor.get_proximity()), 5);
+        if(!isClimbingInitiated) {
             if(master.get_digital_new_press(DIGITAL_LEFT)) {
                 set_lb_pos(LB_STAGED_POSITION, 1200);
             } 
@@ -86,30 +86,28 @@ void opcontrol() {
             } else if(exitLB){
                 activatelb(0);
             }
-            
-        // } else {
-        //     if(master.get_digital_new_press(DIGITAL_UP)) {
-        //         toggleClimb();
-        //     }
-        // }
+        } else {
+            if(master.get_digital_new_press(DIGITAL_UP)) {
+                toggleClimb();
+            }
+        }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         // if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_B)) toggleRightDoinker();
         if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_X)) {
             isColorSort = !isColorSort;
         }
-        // if (master.get_digital_new_press(DIGITAL_Y)) {
-        //     if(!isClimbingInitiated) {
-        //         master.rumble("--");
-        //         set_lb_pos(150, 1200);
-        //         isClimbingInitiated = true;
-        //         pros::Task climb(CLIMB, nullptr);
-        //     } else {
-        //         master.rumble(".");
-        //         isClimbing = !isClimbing;
-        //     }
-        // }
-        
+        if (master.get_digital_new_press(DIGITAL_X)) {
+            if(!isClimbingInitiated) {
+                master.rumble("--");
+                set_lb_pos(150, 1200);
+                isClimbingInitiated = true;
+                pros::Task climb(CLIMB, nullptr);
+            } else {
+                master.rumble(".");
+                isClimbing = !isClimbing;
+            }
+        }
         if(!isNotified && pros::millis() - startTime >= 70000) {
             master.rumble("--------");
             isNotified = true;

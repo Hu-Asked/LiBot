@@ -3,53 +3,7 @@
 void RedRings() {
     isRedAlliance = true;
     chassis.setPose({0, 0, 0});
-    chassis.moveToPoint(0, 4, 1000, {.maxSpeed = 100});
-    pros::delay(50);
-    set_lb_pos(860 - 90, 500);
-    pros::delay(450);
-    chassis.moveToPoint(0, -4, 1000, {.forwards = false, .minSpeed = 60, .earlyExitRange = 1});
-    chassis.turnToPoint(-23.5, -38, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 30, .earlyExitRange = 4});
-    chassis.moveToPoint(-23.5, -38, 1500, {.forwards = false, .maxSpeed = 90, .minSpeed = 15, .earlyExitRange = 6});
-    isIntaking = true;
-    set_lb_pos(LB_ZEROED_POSITION - 150, 1200);
-    chassis.waitUntil(28.5);
-    toggleMOGO();
-    chassis.turnToPoint(-16.7, -54, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 15, .earlyExitRange = 2});
-    chassis.moveToPoint(-16.7, -54, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(-3.5, -68.2, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 15, .earlyExitRange = 2});
-    chassis.moveToPoint(-3.5, -68.2, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 5, .earlyExitRange = 1});
-    // lb1.tare_position();
-    // lb2.tare_position();
-    chassis.moveToPoint(-19, -38.5, 1000, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(-3.5, -49.6, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(-3.5, -49.6, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(32.9, -32, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(32.9, -32, 2200, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToHeading(93, 1000, {.minSpeed = 20, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    double pointX = calculate_relative_move_x(30);
-    double pointY = calculate_relative_move_y(30);
-    chassis.moveToPoint(pointX, pointY, 850, {.maxSpeed = 80, .minSpeed = 80, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    LeftDrive.move(-35);
-    RightDrive.move(-35);
-    pros::delay(307);
-    LeftDrive.move(0);
-    RightDrive.move(0);
-    pros::delay(100);
-    toggleIntakeCount();
-    pros::delay(50);
-    chassis.moveToPoint(pointX, pointY, 600, {.maxSpeed = 60, .minSpeed = 60, .earlyExitRange = 1});
-    pros::delay(500);
-    toggleIntakeCount();
-    chassis.moveToPoint(calculate_relative_move_x(-20), calculate_relative_move_y(-20), 2000, {.forwards = false, .maxSpeed = 50, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(-12, -4.9, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(-12, -4.9, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 20});
-    toggleIntakeCount();
-    chassis.moveToPoint(-13, -3.4, 1500, {.maxSpeed = 45, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    toggleIntakeCount();
-    chassis.moveToPoint(calculate_relative_move_x(-15), calculate_relative_move_y(-15), 1500, {.forwards = false, .maxSpeed = 45, .minSpeed = 20});
+
 }
 
 void RedMOGO() {
@@ -88,82 +42,28 @@ void RedMOGO() {
     chassis.turnToHeading(90, 1000, {.minSpeed = 80});
 }
 
-void RedMOGO2() {
+void RedSAWP() {
     isRedAlliance = true;
-    chassis.setPose(-55, 40, 270);
-    chassis.turnToPoint(-19, 19, 1000, {.forwards = false, .maxSpeed = TURNSPEED});
-    chassis.moveToPoint(-19, 19, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.waitUntil(34);
-    toggleMOGO();
-    chassis.turnToPoint(-8, 37, 800, {.maxSpeed = TURNSPEED});
-    chassis.waitUntilDone();
-    isIntaking = true;
-    chassis.moveToPoint(-8, 37, 1200, {.maxSpeed = DRIVESPEED});
-    pros::delay(500);
-    chassis.moveToPoint(-19, 19, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.turnToPoint(-23.5, 47, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(-23.5, 47, 1000, {.maxSpeed = DRIVESPEED});
-    chassis.waitUntilDone();
-    pros::delay(500);
-    chassis.turnToPoint(-7.5, 51.5, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(-7.5, 51.5, 1000, {.maxSpeed = DRIVESPEED});
-    pros::delay(600);
-    chassis.moveToPoint(-23.5, 47, 800, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.turnToPoint(-12, 8, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(-12, 8, 1000, {.maxSpeed = DRIVESPEED});
-    isScoring = true;
+    chassis.setPose( -61.675, -200, 0);
 }
 
 void BlueRings() {
-    isRedAlliance = false;
-    chassis.setPose({0, 0, 0});
-    chassis.moveToPoint(0, 4, 1000, {.maxSpeed = 100});
-    pros::delay(50);
-    set_lb_pos(860 - 90, 500);
-    pros::delay(450);
-    chassis.moveToPoint(0, -4, 1000, {.forwards = false, .minSpeed = 60, .earlyExitRange = 1});
-    chassis.turnToPoint(23.5, -38, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 30, .earlyExitRange = 4});
-    chassis.moveToPoint(23.5, -38, 1500, {.forwards = false, .maxSpeed = 90, .minSpeed = 15, .earlyExitRange = 6});
+    isRedAlliance = false;    
+    isColorSort = false;
+    chassis.setPose(52, 46.3, 270);
+    chassis.moveToPoint(5, 42, 1500, {.maxSpeed = 127, .minSpeed = 30, .earlyExitRange = 2});
     isIntaking = true;
-    set_lb_pos(LB_ZEROED_POSITION - 150, 1200);
-    chassis.waitUntil(28.5);
+    toggleRightDoinker();
+    chassis.waitUntil(15);
+    isIntaking = false;
+    chassis.swingToPoint(20, 16.6, lemlib::DriveSide::LEFT, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1.5});
+    chassis.moveToPoint(20, 16.6, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.waitUntil(20);
     toggleMOGO();
-    chassis.turnToPoint(25, -54, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 15, .earlyExitRange = 2});
-    chassis.moveToPoint(25, -54, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1.5});
-    chassis.turnToPoint(13, -69, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 15, .earlyExitRange = 2});
-    chassis.moveToPoint(13, -69, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 5, .earlyExitRange = 1});
-    // lb1.tare_position();
-    // lb2.tare_position();
-    chassis.moveToPoint(19, -38.5, 1000, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(3.5, -49.6, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(3.5, -49.6, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(-32.9, -32, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(-32.9, -32, 2200, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToHeading(267, 450, {.minSpeed = 35, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    double pointX = calculate_relative_move_x(30);
-    double pointY = calculate_relative_move_y(30);
-    chassis.moveToPoint(pointX, pointY, 850, {.maxSpeed = 80, .minSpeed = 80, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    LeftDrive.move(-35);
-    RightDrive.move(-35);
-    pros::delay(307);
-    LeftDrive.move(0);
-    RightDrive.move(0);
-    pros::delay(100);
-    toggleIntakeCount();
-    pros::delay(50);
-    chassis.moveToPoint(pointX, pointY, 600, {.maxSpeed = 60, .minSpeed = 60, .earlyExitRange = 1});
-    pros::delay(500);
-    toggleIntakeCount();
-    chassis.moveToPoint(calculate_relative_move_x(-20), calculate_relative_move_y(-20), 2000, {.forwards = false, .maxSpeed = 50, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(14.5, 2.5, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(14.5, 2.5, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 20});
-    toggleIntakeCount();
-    chassis.moveToPoint(14.5, 2.5, 1500, {.maxSpeed = 45, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.waitUntilDone();
-    toggleIntakeCount();
-    chassis.moveToPoint(calculate_relative_move_x(-15), calculate_relative_move_y(-15), 1500, {.forwards = false, .maxSpeed = 45, .minSpeed = 20});
+    toggleRightDoinker();
+    isIntaking = true;
+    chassis.turnToPoint(18, 54, 1000, {.maxSpeed = TURNSPEED});
+    chassis.moveToPoint(18, 54, 1500, {.maxSpeed = DRIVESPEED});
 }
 
 void BlueMOGO() {
@@ -210,40 +110,63 @@ void BlueMOGO() {
 }
 
 
-void BlueMOGO2() {
+void BlueSAWP() {
     isRedAlliance = false;
-    chassis.setPose(55, 40, 90);
-    chassis.turnToPoint(19, 19, 1000, {.forwards = false, .maxSpeed = TURNSPEED});
-    chassis.moveToPoint(19, 19, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.waitUntil(34);
-    toggleMOGO();
-    chassis.turnToPoint(8, 37, 800, {.maxSpeed = TURNSPEED});
-    chassis.waitUntilDone();
+    chassis.setPose(55.8, 20.6, 180);
+    set_lb_pos(LB_STAGED_POSITION, 900);
     isIntaking = true;
-    chassis.moveToPoint(8, 37, 1200, {.maxSpeed = DRIVESPEED});
-    pros::delay(500);
-    chassis.moveToPoint(19, 19, 1500, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.turnToPoint(23.5, 47, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(23.5, 47, 1000, {.maxSpeed = DRIVESPEED});
+    chassis.turnToHeading(137.2, 1500, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 0.2});
     chassis.waitUntilDone();
-    pros::delay(500);
-    chassis.turnToPoint(7.5, 51.5, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(7.5, 51.5, 1000, {.maxSpeed = DRIVESPEED});
-    pros::delay(600);
-    chassis.moveToPoint(23.5, 47, 800, {.forwards = false, .maxSpeed = DRIVESPEED});
-    chassis.turnToPoint(12, 8, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(12, 8, 1000, {.maxSpeed = DRIVESPEED});
-    isScoring = true;
+    pros::delay(550);
+    chassis.moveToPoint(calculate_relative_move_x(12), calculate_relative_move_y(12), 1500, {.maxSpeed = 55, .minSpeed = 40, .earlyExitRange = 4.5});
+    isIntaking = false;
+    activateIntake(0);
+    intake1.move_relative(-50, 100);
+    set_lb_pos(LB_ALLIANCESTAKE_POSITION, 800);
+    double waitForLb = pros::millis();
+    while (pros::millis() - waitForLb < 850) {
+        if(exitLB) {
+            break;
+        }
+        pros::delay(5);
+    }
+    chassis.cancelMotion();
+    chassis.moveToPoint(55.8, 20.6, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 30, .earlyExitRange = 3});
+    chassis.turnToPoint(22.5, 28.5, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(22.5, 28.5, 1500, {.forwards = false, .maxSpeed = 90, .minSpeed = 30, .earlyExitRange = 1});
+    set_lb_pos(LB_ZEROED_POSITION, 1200);
+    chassis.waitUntil(25);
+    toggleMOGO();
+    chassis.waitUntilDone();
+    pros::delay(250);
+    isIntaking = true;
+    chassis.turnToPoint(21.5, 53.8, 1000, {.maxSpeed = TURNSPEED});
+    chassis.moveToPoint(21.5, 53.8, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.turnToPoint(41, 24.25, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(41, 24.25, 1500, {.maxSpeed = DRIVESPEED});
+    chassis.moveToPoint(61.5, -10.2, 1500, {.maxSpeed = 65, .minSpeed = 10, .earlyExitRange = 0.3});
+    toggleMOGO();
+    chassis.waitUntilDone();
+    isSavingRing = true;
+    chassis.turnToPoint(22.2, -15, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(22.2, -15, 1500, {.forwards = false, .maxSpeed = 90, .minSpeed = 30, .earlyExitRange = 1});
+    chassis.waitUntil(21);
+    toggleMOGO();
+    isIntaking = true;
+    chassis.turnToPoint(27.8, -42.7, 1500, {.maxSpeed = TURNSPEED, .minSpeed = 10});
+    chassis.moveToPoint(27.8, -42.7, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10});
+    chassis.turnToPoint(23.6, -0.7, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(23.6, -0.7, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    isIntaking = true;
 }
 
 double LEFT_DISTANCE_SENSOR_OFFSET = 3.3;
 ASSET(path2_txt);
-void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
+void AutonomousSkills() {
     isRedAlliance = true;
     isColorSort = false;
     double waitForLb = 0;
-    
-    chassis.setPose(-61, 0, 90);
+    chassis.setPose(-61.675, 0, 90);
     isIntaking = true;
     pros::delay(500);
     isIntaking = false;
@@ -253,28 +176,33 @@ void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     chassis.waitUntil(21.7);
     toggleMOGO();
     chassis.turnToPoint(-20, 25.5, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
+    set_lb_pos(LB_STAGED_POSITION, 800);
     isIntaking = true;
     chassis.moveToPoint(-20, 25.5, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.turnToPoint(-12.5, 36, 1500, {.maxSpeed = TURNSPEED, .minSpeed = 30, .earlyExitRange = 2});
-    chassis.moveToPoint(-12.5, 36, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 40, .earlyExitRange = 3});
-    chassis.moveToPoint(0, 59.5, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    set_lb_pos(LB_STAGED_POSITION, 800);
+    chassis.turnToPoint(4, 44.2, 1500, {.maxSpeed = TURNSPEED, .minSpeed = 30, .earlyExitRange = 2});
+    chassis.moveToPoint(4, 44.2, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 40, .earlyExitRange = 3});
     chassis.turnToPoint(1, 72.5, 1000, {.maxSpeed = TURNSPEED});
-    chassis.moveToPoint(1, 72.5, 300, {.maxSpeed = DRIVESPEED});
-    chassis.waitUntilDone();
     isIntaking = false;
-    intake1.move_relative(-50, 60);
+    chassis.moveToPoint(1, 72.5, 800, {.maxSpeed = DRIVESPEED});
+    chassis.waitUntilDone();
+    intake1.move_relative(-50, 100);
     set_lb_pos(LB_WALLSTAKE_POSITION, 600);
     waitForLb = pros::millis();
     while (pros::millis() - waitForLb < 650) {
+        LeftDrive.move(-30);
+        RightDrive.move(-30);
+        if(pros::millis() - waitForLb >= 200) {
+            isIntaking = true;
+        }
         if(exitLB) {
             break;
         }
         pros::delay(5);
     }
-    chassis.moveToPoint(0, 50, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 30, .earlyExitRange = 2});
+    double rX = -8;
+    double rY = -8;
+    chassis.moveToPoint(rX, rY, 1500, {.forwards = false, .maxSpeed = 60, .minSpeed = 30, .earlyExitRange = 2});
     chassis.turnToPoint(-20, 47, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
-    isIntaking = true;
     set_lb_pos(LB_ZEROED_POSITION, 1000);
     chassis.moveToPoint(-20, 47, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.moveToPoint(-62, 47, 2500, {.maxSpeed = 75, .minSpeed = 10, .earlyExitRange = 1});
@@ -293,7 +221,7 @@ void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     toggleMOGO();
     chassis.turnToPoint(-20, -22.4, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     isIntaking = true;                      
-    chassis.follow(path2_txt, 6, 7500);
+    chassis.follow(path2_txt, 7, 8500);
 
     // chassis.moveToPoint(-20, -22.4, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
     // chassis.turnToPoint(-15.8, -48, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
@@ -301,15 +229,19 @@ void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     // chassis.turnToPoint(-55.8, -52, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     // chassis.moveToPoint(-55.8, -52, 2500, {.maxSpeed = 75, .minSpeed = 10, .earlyExitRange = 1});
     
-    chassis.swingToPoint(-45.75, -59, lemlib::DriveSide::RIGHT, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
-    chassis.moveToPoint(-45.75, -59, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.swingToPoint(-46, -61, lemlib::DriveSide::RIGHT, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(-46, -61, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.turnToPoint(-55.25, -60, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.waitUntilDone();
     pros::delay(450);
     toggleMOGO();
     isIntaking = false;
-    chassis.moveToPoint(-55.25, -60, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.moveToPoint(-60.6, -61, 1500, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 0.5});
+    
+    /*
     chassis.moveToPoint(-40, -59, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
+    chassis.waitUntilDone();
+    toggleMOGO();
     chassis.turnToPoint(-40, -80, 1000, {.forwards = false, .maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.moveToPoint(-40, -80, 600, {.forwards = false, .maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.waitUntilDone();
@@ -322,6 +254,7 @@ void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     // the reset_distance represents the tracking center's distance from the wall, so figure out a way to translate that into an actual coordinate 
     chassis.setPose(-70 + calculate_reset_distance(LEFT_DISTANCE_SENSOR_OFFSET, leftResetSensor.get_distance(), 0, chassis.getPose().theta), chassis.getPose().y, chassis.getPose().theta);
     pros::delay(50);
+    toggleMOGO();
     toggleLeftDoinker();
     chassis.turnToPoint(1, -61.75, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     set_lb_pos(LB_STAGED_POSITION, 900);
@@ -389,14 +322,15 @@ void AutonomousSkills() { // 1.0460829493x -52.2281106 plot on desmos
     chassis.moveToPoint(66, -16.37, 1700, {.maxSpeed = 127, .minSpeed = 127, .earlyExitRange = 4});
     chassis.moveToPoint(72, -63, 1500, {.maxSpeed = DRIVESPEED, .minSpeed = 10, .earlyExitRange = 1});
     chassis.waitUntilDone();
-    double rX = calculate_relative_move_x(-12);
-    double rY = calculate_relative_move_y(-12);
+    rX = calculate_relative_move_x(-12);
+    rY = calculate_relative_move_y(-12);
     chassis.moveToPoint(rX, rY, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 10, .earlyExitRange = 1});
     chassis.turnToPoint(5, -59, 1000, {.maxSpeed = TURNSPEED, .minSpeed = 10, .earlyExitRange = 1});
     isIntaking = true;
     chassis.moveToPoint(5, -59, 2000, {.maxSpeed = DRIVESPEED});
     pros::delay(600);
     isIntaking = false;
+    */
 }
 
 double target = 0;

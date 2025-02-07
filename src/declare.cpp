@@ -12,9 +12,9 @@ const int TURNSPEED = 120.0f;
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //          PID
-lemlib::ControllerSettings lateralController( 7.4, // proportional gain (kP) 7 not bad
+lemlib::ControllerSettings lateralController( 6.4, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              2.5, // derivative gain (kD) 
+                                              1.9, // derivative gain (kD) 
                                               0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -23,10 +23,10 @@ lemlib::ControllerSettings lateralController( 7.4, // proportional gain (kP) 7 n
                                               127 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angularController( 2.2, // proportional gain (kP) //2.2, 0.2, 7 not bad
-                                              0.2, // integral gain (kI)
+lemlib::ControllerSettings angularController( 2.1, // proportional gain (kP) //2.2, 0.2, 7 not bad
+                                              0.12, // integral gain (kI)
                                               7, // derivative gain (kD)
-                                              4, // anti windup
+                                              2.5, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
                                               3, // large error range, in degrees
@@ -52,8 +52,8 @@ lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniw
 pros::IMU imu(10);
 
 //          ODOMETRY
-pros::Rotation horizontal_encoder(8);
-pros::Rotation vertical_encoder(9);
+pros::Rotation horizontal_encoder(9);
+pros::Rotation vertical_encoder(4);
 
 lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 0.07874);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
@@ -63,9 +63,8 @@ lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             &horizontalTrackingWheel, //horizontal tracking wheel
                             nullptr,
                             &imu,
-                            360/364.394047619
+                            360/356.462381
 );
-
 
 //          JOYSTICK CURVING
 
@@ -90,7 +89,7 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::Distance leftResetSensor(11);
+pros::Distance leftResetSensor(6);
 
 pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut leftDoinkerPiston('H');
@@ -100,8 +99,8 @@ pros::ADIDigitalOut intakeSizePiston('F');
 
 pros::Motor intake1(11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::Optical colorSensor(4);
-pros::Distance distanceSensor(3);
+pros::Optical colorSensor(8);
+pros::Distance distanceSensor(17);
 
 //LadyBrown
 lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);

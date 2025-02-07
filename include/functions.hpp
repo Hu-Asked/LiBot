@@ -18,6 +18,7 @@ extern bool isClimbing;
 
 extern bool isRedAlliance;
 extern bool isColorSort;
+extern bool isSavingRing;
 
 extern double lbTarget;
 extern double lbLimit;
@@ -35,7 +36,7 @@ void toggleRightDoinker();
 void toggleIntakeCount();
 void toggleClimb();
 void activatelb(int speed);
-void movelb(double target, double power, double limit);
+void movelb(double target, double power, double limit, bool timeOut);
 double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading);
 double calculate_relative_move_x(double dist_in);
 double calculate_relative_move_y(double dist_in);
