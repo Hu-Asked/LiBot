@@ -38,7 +38,8 @@ extern pros::Distance leftResetSensor;
 extern pros::ADIDigitalOut clampPiston;
 extern pros::ADIDigitalOut leftDoinkerPiston;
 extern pros::ADIDigitalOut rightDoinkerPiston;
-extern pros::ADIDigitalOut intakeSizePiston;
+extern pros::ADIDigitalOut climbReleasePiston;
+// extern pros::ADIDigitalOut intakeSizePiston;
 
 extern pros::Motor intake1;
 
@@ -51,8 +52,8 @@ extern pros::Rotation lb_encoder;
 
 
 extern pros::ADIDigitalOut climbPTO; 
-extern pros::ADIDigitalOut climbPiston; 
-extern pros::ADIDigitalOut wingPiston;
+// extern pros::ADIDigitalOut climbPiston; 
+// extern pros::ADIDigitalOut wingPiston;
 extern pros::Distance distanceSensor;
 
 

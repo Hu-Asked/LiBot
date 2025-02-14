@@ -12,6 +12,7 @@ void initialize() {
             GHUI::Auton(AutonomousSkills, "Skills", GHUI::OTHER),
             GHUI::Auton(drive_example, "Drive Test", GHUI::OTHER),
             GHUI::Auton(turn_example, "Turn Test", GHUI::OTHER),
+            GHUI::Auton(driveOffLine, "Drive Off Line", GHUI::OTHER)
         }
     );
     chassis.calibrate();
@@ -57,9 +58,9 @@ void opcontrol() {
 
         int Y = master.get_analog(ANALOG_LEFT_Y);
         int X = master.get_analog(ANALOG_RIGHT_X);
-        // if(!isClimbing) {
+        if(!isClimbing) {
             chassis.arcade(Y, X);
-        // }
+        }
         if (master.get_digital(DIGITAL_R1)) {
             isIntaking = true;
             isReverseIntake = false;
@@ -71,12 +72,14 @@ void opcontrol() {
             isReverseIntake = false;
         }
         double lb_pos = (lb1.get_position() + lb2.get_position()) / 2;
-        GHUI::console_print(std::to_string(-70 + calculate_reset_distance(3.3, leftResetSensor.get_distance(), 0, chassis.getPose().theta)), 0);
-        GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()) + " " + std::to_string(colorSensor.get_proximity()), 5);
-        if(!isClimbingInitiated) {
+        // GHUI::console_print(std::to_string(-70 + calculate_reset_distance(3.3, leftResetSensor.get_distance(), 0, chassis.getPose().theta)), 0);
+        GHUI::console_print(std::to_string(lb_pos) + " " + std::to_string(lb1.get_position()) + " " + std::to_string(lb2.get_position()), 5);
+        if(!isClimbing) {
             if(master.get_digital_new_press(DIGITAL_LEFT)) {
                 set_lb_pos(LB_STAGED_POSITION, 1200);
-            } 
+            } else if (master.get_digital_new_press(DIGITAL_UP)) {
+                set_lb_pos(LB_DESCORE_POSITION, 1200);
+            }
             if(master.get_digital(DIGITAL_L2)) {
                 exitLB = true;
                 activatelb(-127);
@@ -86,21 +89,17 @@ void opcontrol() {
             } else if(exitLB){
                 activatelb(0);
             }
-        } else {
-            if(master.get_digital_new_press(DIGITAL_UP)) {
-                toggleClimb();
-            }
         }
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         // if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_B)) toggleRightDoinker();
-        if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_X)) {
+        if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_Y)) {
             isColorSort = !isColorSort;
         }
         if (master.get_digital_new_press(DIGITAL_X)) {
             if(!isClimbingInitiated) {
                 master.rumble("--");
-                set_lb_pos(150, 1200);
+                // set_lb_pos(150, 1200);
                 isClimbingInitiated = true;
                 pros::Task climb(CLIMB, nullptr);
             } else {
@@ -108,6 +107,18 @@ void opcontrol() {
                 isClimbing = !isClimbing;
             }
         }
+        if(master.get_digital_new_press(DIGITAL_Y)) {
+            climbPTO.set_value(!isPTOED);
+            isPTOED = !isPTOED;
+        }
+        // double avgIME = 0;
+        // for(auto i : LeftDrive.get_position_all()) {
+        //     avgIME += i;
+        // }
+        // for(auto i : RightDrive.get_position_all()) {
+        //     avgIME += i;
+        // }
+        // GHUI::console_print(std::to_string(avgIME / 6), 0);
         if(!isNotified && pros::millis() - startTime >= 70000) {
             master.rumble("--------");
             isNotified = true;

@@ -10,6 +10,7 @@ bool isScoring = false;
 bool isMovingLB = false;
 bool isIntaking = false;
 bool isReverseIntake = false;
+bool isPTOED = false;
 
 bool isWingOut = false;
 bool isClimbOut = false;
@@ -19,13 +20,13 @@ bool isClimbing = false;
 
 bool isRedAlliance = true;
 
-bool isColorSort = false;
+bool isColorSort = true;
 
-double BLUE_MIN = 150;
-double BLUE_MAX = 260;
+double BLUE_MIN = 80;
+double BLUE_MAX = 290;
 
 double RED_MIN = 0;
-double RED_MAX = 35;
+double RED_MAX = 45;
 
 double RED_MIN_ALT = 330;
 double RED_MAX_ALT = 360;
@@ -43,12 +44,12 @@ void set_lb_pos(double target, double limit) {
 
 bool isMovingLbNoTimeout = false;
 
-void set_lb_pos_climb(double target, double limit) {
-    exitLB = false;
-    lbTarget = target;
-    lbLimit = limit;
-    isMovingLbNoTimeout = true;
-}
+// void set_lb_pos_climb(double target, double limit) {
+//     exitLB = false;
+//     lbTarget = target;
+//     lbLimit = limit;
+//     isMovingLbNoTimeout = true;
+// }
 
 bool exitLB = true;
 void STAGE_LADY_BROWN(void* param) {
@@ -57,10 +58,10 @@ void STAGE_LADY_BROWN(void* param) {
             movelb(lbTarget, 120, lbLimit, true);
             isMovingLB = false;
         }
-        if(isMovingLbNoTimeout) {
-            movelb(lbTarget, 120, lbLimit, false);
-            isMovingLbNoTimeout = false;
-        }
+        // if(isMovingLbNoTimeout) {
+        //     movelb(lbTarget, 120, lbLimit, false);
+        //     isMovingLbNoTimeout = false;
+        // }
         pros::delay(20);
     }
 }
@@ -72,6 +73,8 @@ void INTAKE(void* param) {
     bool isWrongColor = false;
     double distBetweenRings = 700;  //Distance to timeout color detection for
     std::deque<std::pair<bool, double>> ringsInIntake;  // Eject if true, Position when wrong color detected;
+    int wrongColor = 0;
+    int correctColor = 0;
     while(true) {
         val = colorSensor.get_hue();
         if(isIntaking) { 
@@ -82,21 +85,31 @@ void INTAKE(void* param) {
                         (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
                         ringsInIntake.push_back({true, intake1.get_position()});
                     } else {
+                        if(isSavingRing) {
+                            isIntaking = false;
+                            isSavingRing = false;
+                            activateIntake(0);
+                        }
                         ringsInIntake.push_back({false, intake1.get_position()});
                     }
                 } else if (!ringsInIntake.empty()) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
                         (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
+                        wrongColor++;
+                    } else {
+                        correctColor++;
+                    }
+                    if(wrongColor > correctColor) {
                         ringsInIntake.back().first = true;
+                    } else{
+                        ringsInIntake.back().first = false;
                     }
                 }
+            } else {
+                wrongColor = 0;
+                correctColor = 0;
             }
-            if(isSavingRing && colorSensor.get_proximity() > 200) {
-                isIntaking = false;
-                isSavingRing = false;
-                activateIntake(0);
-            }
-            if (isAntiJam && intake1.get_power() == 0 && (((lb1.get_position() + lb2.get_position()) / 2 < LB_STAGED_POSITION - 15 || (lb1.get_position() + lb2.get_position()) / 2 > LB_STAGED_POSITION + 15) || colorSensor.get_proximity() >= 210 && ringsInIntake.size() < 2)) {
+            if (isAntiJam && intake1.get_power() == 0 && (((lb1.get_position() + lb2.get_position()) / 2 < LB_STAGED_POSITION - 15 || (lb1.get_position() + lb2.get_position()) / 2 > LB_STAGED_POSITION + 15) || (colorSensor.get_proximity() >= 210 && ringsInIntake.size() < 2))) {
                 if (jamStart == -1) {
                     jamStart = pros::millis();
                 }
@@ -138,43 +151,76 @@ void INTAKE(void* param) {
 void CLIMB(void* param) {
     int currentStage = 0;
     double pistonExtendTime = 1100; //900
-    double winchOutTime = 2700;     //2000
-    double maxClimbTime = 3700;
-    bool endClimb = false;
-    pros::delay(500);
+    double winchOutTime = 2500;     //2000
+    double maxClimbTime = 5000;
+    double LBUpPosition = 480; //480 / 330
+    bool endClimb = false; 
+    double WinchInPosition = -1600;
+    double WinchOutPosition = 3300;
+    set_lb_pos(LBUpPosition, 1500);
+    climbReleasePiston.set_value(true);
     while(true) {
         if(endClimb) {
             break;
         }
         if(isClimbing) {
+            LeftDrive.tare_position_all();
+            RightDrive.tare_position_all();
             climbPTO.set_value(true);
+            isPTOED = true;
+            LeftDrive.set_brake_mode(MOTOR_BRAKE_HOLD);
+            RightDrive.set_brake_mode(MOTOR_BRAKE_HOLD);
             while (currentStage < 3) {
                 switch (currentStage) {//set distance to level the robot should be off the ground for the respective hang
-                    case 0:
-                        maxClimbTime = 3350;
-                        break;
+                    // case 0:
+                    //     set_lb_pos(LBUpPosition, 1500);
+                    //     break;
                     case 1:
-                        maxClimbTime = 3800;
+                        activatelb(127);
+                        pros::delay(600);
                         break;
                     case 2:
-                        maxClimbTime = 3800;
+                        WinchInPosition = -2000;
+                        activatelb(127);
+                        pros::delay(600);
                         break;
                 }
                 double startOfClimb = pros::millis();
-
-                while(true) { //Winch in
+                
+                while(currentStage > 0 && pros::millis() - startOfClimb <= maxClimbTime) { //Winch in
                     if(!isClimbing) {
                         endClimb = true;
                         break;
                     }
+                    if(currentStage >= 1 && pros::millis() - startOfClimb <= 100) {
+                        activatelb(127);
+                    } else {
+                        activatelb(10);
+                    }
                     LeftDrive.move(-127);
                     RightDrive.move(-127);
-                    if (pros::millis() - startOfClimb >= maxClimbTime){                       
-                        currentStage++;
+                    // if (pros::millis() - startOfClimb >= maxClimbTime){                       
+                    //     currentStage++;
+                    //     break;
+                    // }
+                    double avgIME = 0;
+                    for(auto i : LeftDrive.get_position_all()) {
+                        avgIME += i;
+                    }
+                    for(auto i : RightDrive.get_position_all()) {
+                        avgIME += i;
+                    }
+                    if(avgIME / 6 <= WinchInPosition) {
                         break;
                     }
                     pros::delay(20);
                 }
+                if(currentStage == 0) {
+                    LeftDrive.tare_position_all();
+                    RightDrive.tare_position_all();
+                    WinchInPosition = 50;
+                }
+                currentStage++;
                 if (currentStage == 3) {
                     isClimbing = false;
                     endClimb = true;
@@ -184,37 +230,49 @@ void CLIMB(void* param) {
                     endClimb = true;
                     break;
                 }
-                climbPiston.set_value(false);
+                activatelb(0);
+                // climbPiston.set_value(false);
                 double startOfWinchOut = pros::millis();
                 bool isEvaded = false;
                 bool isPassived = false;
-                pros::delay(150);
+                // pros::delay(150);
                 double speed = 60;
-                while(pros::millis() - startOfWinchOut < winchOutTime) { //Winch out
+                while(pros::millis() - startOfWinchOut <= winchOutTime) { //Winch out
                     if(!isClimbing) {
                         endClimb = true;
                         break;
                     }
                     LeftDrive.move(speed);
                     RightDrive.move(speed);
-                    if(!isPassived && pros::millis() - startOfWinchOut >= 600) {
-                        climbPiston.set_value(true);
+                    if(!isPassived) activatelb(-110);
+                    if(!isPassived && pros::millis() - startOfWinchOut >= 400) {
+                        // climbPiston.set_value(true);
+                        master.rumble("--");
                         isPassived = true;
+                        activatelb(110);
                         speed = 127;
                     }
-                    if(!isEvaded && pros::millis() - startOfWinchOut >= pistonExtendTime) {
-                        climbPiston.set_value(false);
-                        isEvaded = true;
+                    if(pros::millis() - startOfWinchOut >= 650) activatelb(-110);
+                    double avgIME = 0;
+                    for(auto i : LeftDrive.get_position_all()) {
+                        avgIME += i;
+                    }
+                    for(auto i : RightDrive.get_position_all()) {
+                        avgIME += i;
+                    }
+                    if(avgIME / 6 >= WinchOutPosition) {
+                        break;
                     }
                     pros::delay(20);
                 }
+                activatelb(0);
                 if(!isClimbing) {
                     endClimb = true;
                     break;
                 }
                 LeftDrive.move(0);
                 RightDrive.move(0);
-                climbPiston.set_value(true);
+                // climbPiston.set_value(true);
                 pros::delay(100);
             }
         }
@@ -243,16 +301,16 @@ void toggleRightDoinker() {
     isLifted = !isLifted;
 }
 
-void toggleIntakeCount() {
-    intakeSizePiston.set_value(!isIntakeIncreased);
-    isIntakeIncreased = !isIntakeIncreased;
-}
+// void toggleIntakeCount() {
+//     intakeSizePiston.set_value(!isIntakeIncreased);
+//     isIntakeIncreased = !isIntakeIncreased;
+// }
 
 
-void toggleClimb() {
-    climbPiston.set_value(!isClimbOut);
-    isClimbOut = !isClimbOut;
-}
+// void toggleClimb() {
+//     climbPiston.set_value(!isClimbOut);
+//     isClimbOut = !isClimbOut;
+// }
 
 void activatelb(int speed) {
     lb1.move(speed);

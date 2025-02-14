@@ -12,6 +12,7 @@ extern bool isScoring;
 extern bool isMovingLB;
 extern bool isIntaking;
 extern bool isReverseIntake;
+extern bool isPTOED;
 
 extern bool isClimbingInitiated;
 extern bool isClimbing;
@@ -33,8 +34,8 @@ void activateIntake(int speed);
 void toggleMOGO();
 void toggleLeftDoinker();
 void toggleRightDoinker();
-void toggleIntakeCount();
-void toggleClimb();
+// void toggleIntakeCount();
+// void toggleClimb();
 void activatelb(int speed);
 void movelb(double target, double power, double limit, bool timeOut);
 double calculate_reset_distance(double offset_in, double distance_mm, double intended_heading, double true_heading);

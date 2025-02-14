@@ -53,7 +53,7 @@ pros::IMU imu(10);
 
 //          ODOMETRY
 pros::Rotation horizontal_encoder(9);
-pros::Rotation vertical_encoder(4);
+pros::Rotation vertical_encoder(6);
 
 lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 0.07874);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
@@ -89,12 +89,13 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::Distance leftResetSensor(6);
+pros::Distance leftResetSensor(3);
 
 pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut leftDoinkerPiston('H');
 pros::ADIDigitalOut rightDoinkerPiston('G');
-pros::ADIDigitalOut intakeSizePiston('F');
+pros::ADIDigitalOut climbReleasePiston('B');
+// pros::ADIDigitalOut intakeSizePiston('F');
 
 
 pros::Motor intake1(11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
@@ -109,8 +110,8 @@ pros::Motor lb2(2, pros::MotorGearset::green, pros::MotorUnits::degrees);
 // pros::Rotation lb_encoder(-6);
 
 //Climb
-pros::ADIDigitalOut climbPTO('B'); 
-pros::ADIDigitalOut climbPiston('G');
-pros::ADIDigitalOut wingPiston('H');
+pros::ADIDigitalOut climbPTO('F'); 
+// pros::ADIDigitalOut climbPiston('G');
+// pros::ADIDigitalOut wingPiston('H');
 
 

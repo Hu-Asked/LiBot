@@ -18,6 +18,6 @@ void AutonomousSkills();
 
 void drive_example();
 void turn_example();
-void curve_example();
+void driveOffLine();
 
-#endif  // AUTONS_HPP
+#endif
