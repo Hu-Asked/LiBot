@@ -133,7 +133,7 @@ void INTAKE(void* param) {
         if(isColorSort && !ringsInIntake.empty()) {
             if(distanceSensor.get_distance() < 100) {
                 if(ringsInIntake.front().first) {
-                    pros::delay(70);
+                    pros::delay(60);
                     intake1.move(-127);
                     pros::delay(100);
                     intake1.move(0);

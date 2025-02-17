@@ -12,9 +12,9 @@ const int TURNSPEED = 120.0f;
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //          PID
-lemlib::ControllerSettings lateralController( 6.4, // proportional gain (kP)
+lemlib::ControllerSettings lateralController( 7, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              1.9, // derivative gain (kD) 
+                                              3.4, // derivative gain (kD) 
                                               0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -23,10 +23,10 @@ lemlib::ControllerSettings lateralController( 6.4, // proportional gain (kP)
                                               127 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angularController( 2.1, // proportional gain (kP) //2.2, 0.2, 7 not bad
-                                              0.12, // integral gain (kI)
-                                              7, // derivative gain (kD)
-                                              2.5, // anti windup
+lemlib::ControllerSettings angularController( 2.23, // proportional gain (kP) 
+                                              0.38, // integral gain (kI)
+                                              12.5, // derivative gain (kD)
+                                              5, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
                                               3, // large error range, in degrees
@@ -44,16 +44,16 @@ lemlib::ControllerSettings angularController( 2.1, // proportional gain (kP) //2
 // pros::Motor m5(10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 // pros::Motor m6(6, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::MotorGroup LeftDrive({14, -15, -16}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
-pros::MotorGroup RightDrive({18, -19, 20}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup LeftDrive({-18, -19, 20}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::MotorGroup RightDrive({15, 16, -17}, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
 lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_275, 450, 2);
 
-pros::IMU imu(10);
+pros::IMU imu(14);
 
 //          ODOMETRY
-pros::Rotation horizontal_encoder(9);
-pros::Rotation vertical_encoder(6);
+pros::Rotation horizontal_encoder(12);
+pros::Rotation vertical_encoder(13);
 
 lemlib::TrackingWheel horizontalTrackingWheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 0.07874);
 lemlib::TrackingWheel verticalTrackingWheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.905512);
@@ -63,7 +63,7 @@ lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             &horizontalTrackingWheel, //horizontal tracking wheel
                             nullptr,
                             &imu,
-                            360/356.462381
+                            360/356.761905
 );
 
 //          JOYSTICK CURVING
@@ -89,7 +89,7 @@ lemlib::Chassis chassis(driveTrain,
 
 //          OTHER
 
-pros::Distance leftResetSensor(3);
+pros::Distance leftResetSensor(7);
 
 pros::ADIDigitalOut clampPiston('A');
 pros::ADIDigitalOut leftDoinkerPiston('H');
@@ -98,15 +98,15 @@ pros::ADIDigitalOut climbReleasePiston('B');
 // pros::ADIDigitalOut intakeSizePiston('F');
 
 
-pros::Motor intake1(11, pros::MotorGearset::blue, pros::MotorUnits::degrees);
+pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);
 
-pros::Optical colorSensor(8);
-pros::Distance distanceSensor(17);
+pros::Optical colorSensor(6);
+pros::Distance distanceSensor(8);
 
 //LadyBrown
 lemlib::PID pidlb(0.007, 0, 0, 0.0003, true);
-pros::Motor lb1(-1, pros::MotorGearset::green, pros::MotorUnits::degrees);
-pros::Motor lb2(2, pros::MotorGearset::green, pros::MotorUnits::degrees);
+pros::Motor lb1(9, pros::MotorGearset::green, pros::MotorUnits::degrees);
+pros::Motor lb2(-4, pros::MotorGearset::green, pros::MotorUnits::degrees);
 // pros::Rotation lb_encoder(-6);
 
 //Climb

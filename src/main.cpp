@@ -96,21 +96,21 @@ void opcontrol() {
         if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_Y)) {
             isColorSort = !isColorSort;
         }
-        if (master.get_digital_new_press(DIGITAL_X)) {
-            if(!isClimbingInitiated) {
-                master.rumble("--");
-                // set_lb_pos(150, 1200);
-                isClimbingInitiated = true;
-                pros::Task climb(CLIMB, nullptr);
-            } else {
-                master.rumble(".");
-                isClimbing = !isClimbing;
-            }
-        }
-        if(master.get_digital_new_press(DIGITAL_Y)) {
-            climbPTO.set_value(!isPTOED);
-            isPTOED = !isPTOED;
-        }
+        // if (master.get_digital_new_press(DIGITAL_X)) {
+        //     if(!isClimbingInitiated) {
+        //         master.rumble("--");
+        //         // set_lb_pos(150, 1200);
+        //         isClimbingInitiated = true;
+        //         pros::Task climb(CLIMB, nullptr);
+        //     } else {
+        //         master.rumble(".");
+        //         isClimbing = !isClimbing;
+        //     }
+        // }
+        // if(master.get_digital_new_press(DIGITAL_Y)) {
+        //     climbPTO.set_value(!isPTOED);
+        //     isPTOED = !isPTOED;
+        // }
         // double avgIME = 0;
         // for(auto i : LeftDrive.get_position_all()) {
         //     avgIME += i;
