@@ -23,10 +23,10 @@ lemlib::ControllerSettings lateralController( 7, // proportional gain (kP)
                                               127 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angularController( 2.23, // proportional gain (kP) 
-                                              0.38, // integral gain (kI)
-                                              12.5, // derivative gain (kD)
-                                              5, // anti windup
+lemlib::ControllerSettings angularController( 1.75, // proportional gain (kP)  2.23
+                                              0.1, // integral gain (kI) 0.38
+                                              8, // derivative gain (kD) 12.5
+                                              2, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
                                               3, // large error range, in degrees
@@ -50,6 +50,7 @@ pros::MotorGroup RightDrive({15, 16, -17}, pros::MotorGearset::blue, pros::Motor
 lemlib::Drivetrain driveTrain(&LeftDrive, &RightDrive, trackWidth, lemlib::Omniwheel::NEW_275, 450, 2);
 
 pros::IMU imu(14);
+pros::IMU imu2(2);
 
 //          ODOMETRY
 pros::Rotation horizontal_encoder(12);
@@ -62,8 +63,12 @@ lemlib::OdomSensors sensors(&verticalTrackingWheel, //vertical tracking wheel
                             nullptr,
                             &horizontalTrackingWheel, //horizontal tracking wheel
                             nullptr,
-                            &imu,
-                            360/356.761905
+                            &imu2,
+                            nullptr,
+                            360/364.822381,
+                            1
+                            // 360/356.761905,
+                            // 360/265.39
 );
 
 //          JOYSTICK CURVING
@@ -92,10 +97,10 @@ lemlib::Chassis chassis(driveTrain,
 pros::Distance leftResetSensor(7);
 
 pros::ADIDigitalOut clampPiston('A');
-pros::ADIDigitalOut leftDoinkerPiston('H');
-pros::ADIDigitalOut rightDoinkerPiston('G');
+pros::ADIDigitalOut leftDoinkerPiston('E');
+pros::ADIDigitalOut rightDoinkerPiston('H');
 pros::ADIDigitalOut climbReleasePiston('B');
-// pros::ADIDigitalOut intakeSizePiston('F');
+pros::ADIDigitalOut intakeSizePiston('C');
 
 
 pros::Motor intake1(-10, pros::MotorGearset::blue, pros::MotorUnits::degrees);

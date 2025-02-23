@@ -33,10 +33,10 @@
  * For instance, you can do `4_mtr = 50` to set motor 4's target velocity to 50
  */
 #define PROS_USE_LITERALS
-#define LB_STAGED_POSITION 64
+#define LB_STAGED_POSITION 68
 #define LB_WALLSTAKE_POSITION 365
 #define LB_DESCORE_POSITION 400
-#define LB_ALLIANCESTAKE_POSITION 600 
+#define LB_ALLIANCESTAKE_POSITION 610
 #define LB_BACKPACK_POSITION 200
 #define LB_ZEROED_POSITION 15
 

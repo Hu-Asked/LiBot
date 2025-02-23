@@ -39,7 +39,7 @@ extern pros::ADIDigitalOut clampPiston;
 extern pros::ADIDigitalOut leftDoinkerPiston;
 extern pros::ADIDigitalOut rightDoinkerPiston;
 extern pros::ADIDigitalOut climbReleasePiston;
-// extern pros::ADIDigitalOut intakeSizePiston;
+extern pros::ADIDigitalOut intakeSizePiston;
 
 extern pros::Motor intake1;
 

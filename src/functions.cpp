@@ -301,10 +301,10 @@ void toggleRightDoinker() {
     isLifted = !isLifted;
 }
 
-// void toggleIntakeCount() {
-//     intakeSizePiston.set_value(!isIntakeIncreased);
-//     isIntakeIncreased = !isIntakeIncreased;
-// }
+void toggleIntakeCount() {
+    intakeSizePiston.set_value(!isIntakeIncreased);
+    isIntakeIncreased = !isIntakeIncreased;
+}
 
 
 // void toggleClimb() {
