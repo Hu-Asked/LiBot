@@ -93,6 +93,7 @@ void opcontrol() {
         if (master.get_digital_new_press(DIGITAL_A)) toggleMOGO();
         // if (master.get_digital_new_press(DIGITAL_B)) toggleIntakeCount();
         if (master.get_digital_new_press(DIGITAL_B)) toggleRightDoinker();
+        if (master.get_digital(DIGITAL_B) && master.get_digital_new_press(DIGITAL_X)) toggleLeftDoinker();
         if (master.get_digital(DIGITAL_RIGHT) && master.get_digital(DIGITAL_Y)) {
             isColorSort = !isColorSort;
         }

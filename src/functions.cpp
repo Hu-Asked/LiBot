@@ -80,16 +80,16 @@ void INTAKE(void* param) {
         if(isIntaking) { 
             activateIntake(127);
             if(isColorSort && colorSensor.get_proximity() > 200) {
+                if(isSavingRing) {
+                    isIntaking = false;
+                    isSavingRing = false;
+                    activateIntake(0);
+                }
                 if(ringsInIntake.empty() || fabs(intake1.get_position() - ringsInIntake.back().second) >= distBetweenRings) {
                     if ((isRedAlliance && (val > BLUE_MIN && val < BLUE_MAX)) ||
                         (!isRedAlliance && (val < RED_MAX || val > RED_MIN_ALT))) {
                         ringsInIntake.push_back({true, intake1.get_position()});
                     } else {
-                        if(isSavingRing) {
-                            isIntaking = false;
-                            isSavingRing = false;
-                            activateIntake(0);
-                        }
                         ringsInIntake.push_back({false, intake1.get_position()});
                     }
                 } else if (!ringsInIntake.empty()) {
@@ -133,7 +133,7 @@ void INTAKE(void* param) {
         if(isColorSort && !ringsInIntake.empty()) {
             if(distanceSensor.get_distance() < 100) {
                 if(ringsInIntake.front().first) {
-                    pros::delay(60);
+                    pros::delay(80);
                     intake1.move(-127);
                     pros::delay(100);
                     intake1.move(0);
